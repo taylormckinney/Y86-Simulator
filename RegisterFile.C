@@ -26,11 +26,11 @@ RegisterFile::RegisterFile()
  */
 RegisterFile * RegisterFile::getInstance()
 {
-   if (!regInstance){
-    regInstance = new RegisterFile();
-   }
+    if (!regInstance){
+        regInstance = new RegisterFile();
+    }
 
-   return regInstance;
+    return regInstance;
 }
 
 /**
@@ -44,19 +44,19 @@ RegisterFile * RegisterFile::getInstance()
  * @param register number
  * @returns reg[regNumber] if regNumber is valid, otherwise 0
  * @returns sets error to false if regNumber is valid, otherwise true
-*/
+ */
 uint64_t RegisterFile::readRegister(int32_t regNumber, bool & error)
 {
-    //uint30_t validRegNums[] = {1,2,3,4,5,6,7};
-
-    for (int i = 1; i < 8; i++) {
-        if (reg[regNumber] == i) {
-            error = false;
-            return reg[regNumber];
-        }
-     }
-        error = true;
+    if(regNumber < RAX || regNumber > RNONE)
+    {
+        error = true; 
         return 0;
+    }
+    else
+    {
+        error = false;
+        return reg[regNumber];
+    }
 }
 
 /**
@@ -69,8 +69,19 @@ uint64_t RegisterFile::readRegister(int32_t regNumber, bool & error)
  * @returns sets error to false if regNumber is valid and true otherwise
  */
 void RegisterFile::writeRegister(uint64_t value, int32_t regNumber, 
-                                 bool & error)
+        bool & error)
 {
+    if(regNumber < RAX || regNumber > RNONE)
+    {
+        error = true;
+        return 0;
+    }
+    else
+    {
+        error = false;
+        return reg[regNumber];
+    }
+
    return;
 }
 
