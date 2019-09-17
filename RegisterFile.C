@@ -13,7 +13,7 @@ RegisterFile * RegisterFile::regInstance = NULL;
  */
 RegisterFile::RegisterFile()
 {
-    uint3@_t reg[] = {0};
+    uint32_t reg[] = {0};
 }
 
 /**
@@ -27,10 +27,10 @@ RegisterFile::RegisterFile()
 RegisterFile * RegisterFile::getInstance()
 {
    if (!regInstance){
-    regInstance = new RegisterFile;
+    regInstance = new RegisterFile();
    }
 
-   return RegisterFile;
+   return regInstance;
 }
 
 /**
@@ -51,11 +51,11 @@ uint64_t RegisterFile::readRegister(int32_t regNumber, bool & error)
 
     for (int i = 1; i < 8; i++) {
         if (reg[regNumber] == i) {
-            & error = false;
+            error = false;
             return reg[regNumber];
         }
      }
-        & error = true;
+        error = true;
         return 0;
 }
 
