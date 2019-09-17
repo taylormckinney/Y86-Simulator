@@ -1,1 +1,2 @@
-9/17: Moved my Tools.* files to the team directory, 
+9/17: Moved my Tools.* files to the team directory, implemented readRegister and
+      writeRegister in registerFile together with Cori. Implemented ConditionCodes. 
