@@ -13,7 +13,10 @@ RegisterFile * RegisterFile::regInstance = NULL;
  */
 RegisterFile::RegisterFile()
 {
-    uint32_t reg[] = {0};
+    for(int i=RAX; i<R14; i++)
+    {
+        reg[i] = 0;
+    }
 }
 
 /**
@@ -47,7 +50,7 @@ RegisterFile * RegisterFile::getInstance()
  */
 uint64_t RegisterFile::readRegister(int32_t regNumber, bool & error)
 {
-    if(regNumber < RAX || regNumber > RNONE)
+    if(regNumber < RAX || regNumber >= RNONE)
     {
         error = true; 
         return 0;
@@ -71,15 +74,14 @@ uint64_t RegisterFile::readRegister(int32_t regNumber, bool & error)
 void RegisterFile::writeRegister(uint64_t value, int32_t regNumber, 
         bool & error)
 {
-    if(regNumber < RAX || regNumber > RNONE)
+    if(regNumber < RAX || regNumber >= RNONE)
     {
         error = true;
-        return 0;
     }
     else
     {
         error = false;
-        return reg[regNumber];
+        reg[regNumber] = value;
     }
 
    return;
