@@ -7,8 +7,8 @@ class Loader
    public:
       Loader(int argc, char * argv[]);
       bool isLoaded();
-      bool iSValidFileName(string fname);
-      void loadLine(string line);
-      uint64_t convertHex(string line, int begin, int end);
-
+      bool isValidFileName(std::string fname);
+      void loadLine(std::string line);
+      uint64_t convertHex(std::string line, int begin, int end);
+    
 };
