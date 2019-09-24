@@ -1,2 +1,4 @@
 9/17: Moved my Tools.* files to the team directory, implemented readRegister and
       writeRegister in registerFile together with Cori. Implemented ConditionCodes. 
+
+9/20: Implemented and debugged/tested all methods in Memory.C file. 
