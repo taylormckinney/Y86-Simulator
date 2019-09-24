@@ -7,4 +7,6 @@ class Loader
    public:
       Loader(int argc, char * argv[]);
       bool isLoaded();
+      bool iSValidFileName(string FileName);
+
 };
