@@ -5,4 +5,9 @@
 
 9/23: Debugged ConditionCodes file according to test results until all tests passed.
 
-9/24: Begin lab 6, Loader.   
+9/24: Begin lab 6, Loader.  
+
+9/25-10/6: Incrementally worked on lab 6 with Cori. We met at various times and took turns 
+            typing, so it was split in half. 
+
+10/7: We finally figured out the problem in our loadLine function, implemented hasErrors.
