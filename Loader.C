@@ -97,23 +97,21 @@ bool Loader::isValidFileName(std::string fname) {
 void Loader::loadLine(std::string line)
 {
     bool memError = false;
-    if(line[0] == '0')
+    if(line[0] == '0' && line[DATABEGIN] != ' ')
     {   
         int32_t addr = convertHex(line, ADDRBEGIN, ADDREND);
         int8_t byte = 0;
         Memory* mem = Memory::getInstance();
         for(int i=DATABEGIN; i < COMMENT; i++)
         {
-            if(line[i] == ' ')
+            if(line[i] != ' ' && line[i+1] != ' ')
             {
-                break;
+                byte = convertHex(line, i, i+1);
+                mem->putByte(byte, addr, memError); 
+                i++;
+                addr++; 
             }
-            byte = convertHex(line, i, i+2);
-            //std::cout << std::hex << addr << ": " << std::hex<< byte << "\n";
-            mem->putByte(byte, addr, memError); 
-            i +=2;
-            addr++; 
-                }
+        }
     
     }
 }
