@@ -33,7 +33,7 @@
 Loader::Loader(int argc, char * argv[])
 {
     loaded = false;
-
+    int lineNumber = 0;
     if(!isValidFileName(argv[1]))
     {//if true, file is open; if false, failed to open file
         return;
@@ -44,19 +44,14 @@ Loader::Loader(int argc, char * argv[])
         std::string line;
         std::getline(inf, line);//loads next line from file into 'line'
         //std::cout << line << "\n"; //prints the file line by line
+        if(hasErrors(line))
+        {
+            std::cout << "Error on line " << std::dec << lineNumber << ": " << line << std::endl;
+        //    return;
+        }
         loadLine(line);
     }
 
-
-    //Next, add a method that will write the data in the line to memory 
-    //(call that from within your loop)
-
-    //Finally, add code to check for errors in the input line.
-    //When your code finds an error, you need to print an error message and return.
-    //Since your output has to be identical to your instructor's, use this cout to print the
-    //error message.  Change the variable names if you use different ones.
-    //  std::cout << "Error on line " << std::dec << lineNumber
-    //       << ": " << line << std::endl;
 
 
     //If control reaches here then no error was found and the program
@@ -112,7 +107,7 @@ void Loader::loadLine(std::string line)
                 addr++; 
             }
         }
-    
+
     }
 }
 
@@ -122,5 +117,33 @@ uint64_t Loader::convertHex(std::string line, int begin, int end) {
     ss << line.substr(begin, (end-begin)+1);
     ss >> std::hex >> val;
     return val;
+}
+/**
+ * determines if the line contains any errors
+ */
+bool Loader::hasErrors(std::string line)
+{
+    int dataEnd = line.find(' ') - 1;
+    if(!validHex(line, DATABEGIN, dataEnd) || !validHex(line, ADDRBEGIN, ADDREND) 
+        || line[COMMENT] != '|')
+    {
+        return true;
+    }
+    return false;
+}
+/**
+ * determines if all values in a given range are hex digits 
+ *  returns true if all values are valid hex
+ */
+bool Loader::validHex(std::string line, int start, int end)
+{
+    for(int i= start; i <=end; i++)
+    {
+        if(!isxdigit(line[i]))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
