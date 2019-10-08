@@ -99,18 +99,20 @@ void Loader::loadLine(std::string line)
     bool memError = false;
     if(line[0] == '0')
     {   
-        uint64_t addr = convertHex(line, ADDRBEGIN, ADDREND);
-        int i = DATABEGIN;
+        int32_t addr = convertHex(line, ADDRBEGIN, ADDREND);
         int8_t byte = 0;
         Memory* mem = Memory::getInstance();
-        while(line[i] != ' ' &&  i < COMMENT)
+        for(int i=DATABEGIN; i < COMMENT; i++)
         {
+            if(line[i] == ' ')
+            {
+                break;
+            }
             byte = convertHex(line, i, i+2);
+            //std::cout << std::hex << addr << ": " << std::hex<< byte << "\n";
             mem->putByte(byte, addr, memError); 
-            //std::cout << std::hex << addr << ": " << std::hex << byte << "\n";
             i +=2;
-            addr++;
-        
+            addr++; 
                 }
     
     }
@@ -119,7 +121,7 @@ void Loader::loadLine(std::string line)
 uint64_t Loader::convertHex(std::string line, int begin, int end) {
     uint64_t val;
     std::stringstream ss;
-    ss << line.substr(begin, 3);
+    ss << line.substr(begin, (end-begin)+1);
     ss >> std::hex >> val;
     return val;
 }
