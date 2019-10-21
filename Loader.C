@@ -39,17 +39,18 @@ Loader::Loader(int argc, char * argv[])
         return;
     }
     inf.open(argv[1]);
-    while(!inf.eof())
+    while(inf)
     {
         std::string line;
         std::getline(inf, line);//loads next line from file into 'line'
-        //std::cout << line << "\n"; //prints the file line by line
+    //    std::cout <<std::dec <<lineNumber << ":" << line << "\n"; //prints the file line by line
         if(hasErrors(line))
         {
-            std::cout << "Error on line " << std::dec << lineNumber << ": " << line << std::endl;
-        //    return;
+        std::cout << "Error on line " << std::dec << lineNumber << ": " << line << std::endl;
+            return;
         }
         loadLine(line);
+        lineNumber++;
     }
 
 
@@ -123,13 +124,24 @@ uint64_t Loader::convertHex(std::string line, int begin, int end) {
  */
 bool Loader::hasErrors(std::string line)
 {
-    int dataEnd = line.find(' ') - 1;
-    if(!validHex(line, DATABEGIN, dataEnd) || !validHex(line, ADDRBEGIN, ADDREND) 
-        || line[COMMENT] != '|')
+    int dataEnd = line.find(' ', DATABEGIN) - 1;
+    if(!validHex(line, DATABEGIN, dataEnd) || !validHex(line, ADDRBEGIN, ADDREND)
+       && !hasValidSyntax(line) && !isCommentLine(line)  && line.length()>0)
     {
         return true;
     }
     return false;
+}
+/**
+ * returns true if all symbols (ie colons, pipes, etc) are in the right place
+ */
+bool Loader::hasValidSyntax(std::string line)
+{
+    if(line[5] != ':'|| line[6] != ' ' || line[COMMENT] != '|' || line[1] != 'x' || line[1] !='X')
+    {
+        return false;
+    }
+    return true;
 }
 /**
  * determines if all values in a given range are hex digits 
@@ -147,3 +159,12 @@ bool Loader::validHex(std::string line, int start, int end)
     return true;
 }
 
+bool Loader::isCommentLine(std::string line)
+{
+    for(int i= DATABEGIN; i < COMMENT; i++)
+    {
+        if(line[i] != ' ')
+            return false;
+    }
+    return true;
+}

@@ -19,7 +19,7 @@ Tools.o: Tools.h
 RegisterFile.o: RegisterFile.h Tools.h
 
 
-ConditionCodes.o: ConditionCodes.h ConditionCodesTester.h
+ConditionCodes.o: ConditionCodes.h
 
 
 clean:
