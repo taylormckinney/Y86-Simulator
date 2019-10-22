@@ -11,15 +11,13 @@ lab6.o: Memory.h RegisterFile.h ConditionCodes.h Loader.h
 
 Loader.o: Loader.h Memory.h
 
-
 Memory.o: Memory.h Tools.h
 
 Tools.o: Tools.h
 
 RegisterFile.o: RegisterFile.h Tools.h
 
-
-ConditionCodes.o: ConditionCodes.h ConditionCodesTester.h
+ConditionCodes.o: ConditionCodes.h
 
 
 clean:
