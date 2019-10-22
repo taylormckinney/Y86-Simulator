@@ -46,7 +46,7 @@ M.o: RegisterFile.h Instructions.h PipeRegField.h PipeReg.h M.h Status.h
 W.o: RegisterFile.h Instructions.h PipeRegField.h PipeReg.h W.h Status.h
 
 clean:
-	rm $(OBJ) lab6
+	rm $(OBJ) yess
 
 run:
 	make clean
