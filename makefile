@@ -12,16 +12,13 @@ yess.o: Memory.h RegisterFile.h ConditionCodes.h Loader.h Debug.h PipeReg.h\
 
 Loader.o: Loader.h Memory.h
 
-
 Memory.o: Memory.h Tools.h
 
 Tools.o: Tools.h
 
 RegisterFile.o: RegisterFile.h Tools.h
 
-
 ConditionCodes.o: ConditionCodes.h
-
 
 clean:
 	rm $(OBJ) lab6
