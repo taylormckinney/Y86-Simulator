@@ -32,6 +32,12 @@ FetchStage.o: $(XSTG) $(ALLSTGH)
 
 DecodeStage.o: $(XSTG) $(ALLSTGH)
 
+ExecuteStage.o $(XSTG) $(ALLSTGH)
+
+MemoryStage.o: $(XSTG) $(ALLSTGH)
+
+WritebackStage.o: $(XSTG) $(ALLSTGH)
+
 PipeReg.o: PipeReg.h
 
 PipeRegField.o: PipeRegField.h
@@ -50,7 +56,7 @@ M.o: $(USLSUS) M.h
 W.o: $(USLSUS) W.h
 
 clean:
-	rm $(OBJ) lab7
+	rm $(OBJ)
 
 run:
 	make clean
