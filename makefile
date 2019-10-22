@@ -1,6 +1,9 @@
 CC = g++
 CFLAGS = -g -c -Wall -std=c++11 -Og
-OBJ =  Memory.o Tools.o RegisterFile.o ConditionCodes.o Loader.o D.o
+OBJ =  Loader.o Memory.o Tools.o RegisterFile.o ConditionCodes.o FetchStage.o\
+		DecodeStage.o PipeReg.o PipeRegField.o Simulate.o F.o D.o E.o\
+		M.o W.o
+		
 ALLSTG = F.h D.h E.h M.h W.h
 
 .C.o:
@@ -8,7 +11,7 @@ ALLSTG = F.h D.h E.h M.h W.h
 
 yess: $(OBJ)
 
-yess.o: Memory.h RegisterFile.h ConditionCodes.h Loader.h Debug.h PipeReg.h\
+yess.o: Debug.h Memory.h Loader.h RegisterFile.h ConditionCodes.h PipeReg.h\
 		Stage.h Simulate.h
 
 Loader.o: Loader.h Memory.h
