@@ -50,6 +50,7 @@ Loader::Loader(int argc, char * argv[])
         //    return;
         }
         loadLine(line);
+        lineNumber++;
     }
 
 
@@ -124,13 +125,31 @@ uint64_t Loader::convertHex(std::string line, int begin, int end) {
 bool Loader::hasErrors(std::string line)
 {
     int dataEnd = line.find(' ') - 1;
-    if(!validHex(line, DATABEGIN, dataEnd) || !validHex(line, ADDRBEGIN, ADDREND) 
-        || line[COMMENT] != '|')
+    if(((!isCommentLine(line) && (!validHex(line, DATABEGIN, dataEnd) 
+        || !validHex(line, ADDRBEGIN, ADDREND))) || line[COMMENT] != '|') 
+        && line.length() >0 )
     {
         return true;
     }
     return false;
 }
+/**
+ * returns true if given line is just a comment line
+ *      -entirely blank until COMMENT
+ *      -has address, then blank until COMMENT
+ */
+bool Loader::isCommentLine(std::string line)
+{
+    for(int i=(ADDREND +2); i < COMMENT; i++)
+    {
+        if(line[i] != ' ')
+        {
+            return false; 
+        }
+    }
+    return true;
+}
+
 /**
  * determines if all values in a given range are hex digits 
  *  returns true if all values are valid hex
