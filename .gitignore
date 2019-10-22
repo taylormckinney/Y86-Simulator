@@ -1,6 +1,12 @@
 *.o
 lab5
 lab6
-Outputs/*
 lab7
+yess
+*.idump
 
+*.sdump
+
+/Outputs/*.idump
+
+/Outputs/*.sdump
