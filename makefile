@@ -50,6 +50,6 @@ clean:
 
 run:
 	make clean
-	make lab7
+	make yess
 	./run.sh
 
