@@ -132,10 +132,24 @@ bool Loader::hasErrors(std::string line)
     {
         return true;
     }
-    if(!isCommentLine(line) && (line[1] !='x' || line[1] != 'X') && line[COLON] != ':' && line.length() >0)
+    if(!isCommentLine(line) && line[COLON] != ':'  && line.length() >0)
     {
         return true;
     }
+    if(line[0]=='0' && line[1] !='x')
+    {
+        return true;
+    }
+
+    for(int i=0; i< COMMENT; i++)
+    {
+        if(!validHex(line, i, i) && line[i] != ' ' && line[i] !=':' && line[i] != 'x')
+        {
+            return true;
+        }
+    }
+    uint64_t prevAddr = line.substr(ADDRBEGIN, 3);//TODO:CONVERT SUBSTR TO UINT, CHECK THAT ADDR THIS TIME
+    //IS GREATER THAN PREV ADDR
     return false;
 }
 /**
