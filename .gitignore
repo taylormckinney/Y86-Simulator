@@ -1,2 +1,6 @@
 *.o
 lab5
+lab6
+*.idump
+*.sdump
+lab7
