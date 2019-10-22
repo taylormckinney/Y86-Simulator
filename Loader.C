@@ -17,7 +17,7 @@
 #define ADDREND 4     //ending column of 3 digit hext address
 #define DATABEGIN 7   //starting column of data bytes
 #define COMMENT 28    //location of the '|' character 
-
+#define COLON 5 //location of the ':' character 
 /**
  * Loader constructor
  * Opens the .yo file named in the command line arguments, reads the contents of the file
@@ -33,7 +33,7 @@
 Loader::Loader(int argc, char * argv[])
 {
     loaded = false;
-    int lineNumber = 0;
+    int lineNumber = 1;
     if(!isValidFileName(argv[1]))
     {//if true, file is open; if false, failed to open file
         return;
@@ -47,7 +47,8 @@ Loader::Loader(int argc, char * argv[])
         if(hasErrors(line))
         {
             std::cout << "Error on line " << std::dec << lineNumber << ": " << line << std::endl;
-        //    return;
+            loaded = false;
+            return;
         }
         loadLine(line);
         lineNumber++;
@@ -128,6 +129,10 @@ bool Loader::hasErrors(std::string line)
     if(((!isCommentLine(line) && (!validHex(line, DATABEGIN, dataEnd) 
         || !validHex(line, ADDRBEGIN, ADDREND))) || line[COMMENT] != '|') 
         && line.length() >0 )
+    {
+        return true;
+    }
+    if(!isCommentLine(line) && (line[1] !='x' || line[1] != 'X') && line[COLON] != ':' && line.length() >0)
     {
         return true;
     }
