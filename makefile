@@ -32,7 +32,7 @@ FetchStage.o: $(XSTG) $(ALLSTGH)
 
 DecodeStage.o: $(XSTG) $(ALLSTGH)
 
-ExecuteStage.o $(XSTG) $(ALLSTGH)
+ExecuteStage.o: $(XSTG) $(ALLSTGH)
 
 MemoryStage.o: $(XSTG) $(ALLSTGH)
 
