@@ -7,7 +7,11 @@ OBJ =  Loader.o Memory.o Tools.o RegisterFile.o ConditionCodes.o FetchStage.o\
 		DecodeStage.o PipeReg.o PipeRegField.o Simulate.o F.o D.o E.o\
 		M.o W.o
 		
-ALLSTG = F.h D.h E.h M.h W.h
+ALLSTGH = F.h D.h E.h M.h W.h
+ALLSTGS = FetchStage.h DecodeStage.h ExecuteStage.h MemoryStage.h WritebackStage.h	
+USLSUS = Instructions.h RegisterFile.h PipeReg.h PipeRegField.h Status.h
+XSTG = RegisterFile.h PipeRegField.h PipeReg.h Stage.h FetchStage.h Status.h\
+		Debug.h
 
 .C.o:
 	$(CC) $(CFLAGS) $< -o $@
@@ -25,31 +29,28 @@ Tools.o: Tools.h
 
 RegisterFile.o: RegisterFile.h Tools.h
 
-ConditionCodes.o: ConditionCodes.h
+ConditionCodes.o: ConditionCodes.h Tools.h
 
-FetchStage.o: RegisterFile.h PipeRegField.h PipeReg.h $(ALLSTG) Stage.h\
-		FetchStage.h Status.h Debug.h
+FetchStage.o: $(XSTG) $(ALLSTGH)
 
-DecodeStage.o: RegisterFile.h PipeRegField.h PipeReg.h $(ALLSTG) Stage.h\
-		DecodeStage.h Status.h Debug.h
+DecodeStage.o: $(XSTG) $(ALLSTGH)
 
 PipeReg.o: PipeReg.h
 
 PipeRegField.o: PipeRegField.h
 
-Simulate.o: $(ALLSTG) Stage.h ExecuteStage.h MemoryStage.h DecodeStage.h\
-		FetchStage.h WritebackStage.h Simulate.h Memory.h\
-		RegisterFile.h ConditionCodes.h
+Simulate.o: $(ALLSTGH) $(ALLSTGS) Stage.h Simulate.h Memory.h RegisterFile.h\
+		ConditionCodes.h
 		
 F.o: PipeRegField.h PipeReg.h F.h
 
-D.o: Instructions.h RegisterFile.h PipeReg.h PipeRegField.h D.h Status.h
+D.o: $(USLSUS) D.h
 
-E.o: RegisterFile.h Instructions.h PipeRegField.h PipeReg.h E.h Status.h
+E.o: $(USLSUS) E.h
 
-M.o: RegisterFile.h Instructions.h PipeRegField.h PipeReg.h M.h Status.h
+M.o: $(USLSUS) M.h
 
-W.o: RegisterFile.h Instructions.h PipeRegField.h PipeReg.h W.h Status.h
+W.o: $(USLSUS) W.h
 
 clean:
 	rm $(OBJ) lab7

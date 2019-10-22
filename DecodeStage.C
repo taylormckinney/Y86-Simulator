@@ -22,11 +22,20 @@
  * @param: stages - array of stages (FetchStage, DecodeStage, ExecuteStage,
  *         MemoryStage, WritebackStage instances)
  */
-bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
+bool DecodeStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 {
         D * dreg = (D *) pregs[DREG];
         E * ereg = (E *) pregs[EREG];
+        uint64_t stat = dreg->getstat()->getOutput();
+        uint64_t icode = dreg->geticode()->getOutput();
+        uint64_t ifun = dreg->getifun()->getOutput();
+        uint64_t valC = dreg->getvalC()->getOutput();
         
+        uint64_t valA =0, valB =0;
+        uint64_t dstE = RNONE, dstM = RNONE;
+        uint64_t d_srcA = 0, d_srcB =0;
+        
+        uint64_t srcA = d_srcA, srcB = d_srcB;
         
         
         setEInput(ereg, stat, icode, ifun, valC, valA, valB, dstE, dstM, srcA, srcB);
@@ -38,8 +47,20 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
  *
  * @param: pregs - array of the pipeline register (F, D, E, M, W instances)
  */
-void FetchStage::doClockHigh(PipeReg ** pregs)
+void DecodeStage::doClockHigh(PipeReg ** pregs)
 {
+        E * ereg = (E *) pregs[EREG];
+        
+        ereg->getstat()->normal();
+        ereg->geticode()->normal();
+        ereg->getifun()->normal();
+        ereg->getvalC()->normal();
+        ereg->getvalA()->normal();
+        ereg->getvalB()->normal();
+        ereg->getdstE()->normal();
+        ereg->getdstM()->normal();
+        ereg->getsrcA()->normal();
+        ereg->getsrcB()->normal();
 }
 /* setDInput
  * provides the input to potentially be stored in the D register
@@ -57,7 +78,7 @@ void FetchStage::doClockHigh(PipeReg ** pregs)
  * @param: srcA - value to be stored in the srcA pipeline register within E
  * @param: srcB - value to be stored in the srcB pipeline register within E
 */
-void setEInput(E * ereg, uint64_t stat, uint64_t icode, uint64_t ifun,
+void DecodeStage::setEInput(E * ereg, uint64_t stat, uint64_t icode, uint64_t ifun,
         uint64_t valC, uint64_t valA, uint64_t valB, uint64_t dstE,
         uint64_t dstM, uint64_t srcA, uint64_t srcB)
 {
