@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-  
-=======
 CC = g++
 CFLAGS = -g -c -Wall -std=c++11 -Og
 OBJ =  Loader.o Memory.o Tools.o RegisterFile.o ConditionCodes.o FetchStage.o\
@@ -60,4 +57,3 @@ run:
 	make yess
 	./run.sh
 
->>>>>>> 212b5786e7fb6d7d00e2ee3fd2f356c9a65bc9a4
