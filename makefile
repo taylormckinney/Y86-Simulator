@@ -1,8 +1,8 @@
 CC = g++
 CFLAGS = -g -c -Wall -std=c++11 -Og
 OBJ =  Loader.o Memory.o Tools.o RegisterFile.o ConditionCodes.o FetchStage.o\
-		DecodeStage.o PipeReg.o PipeRegField.o Simulate.o F.o D.o E.o\
-		M.o W.o
+		DecodeStage.o ExecuteStage.o MemoryStage.o WritebackStage.o PipeReg.o \
+		PipeRegField.o Simulate.o F.o D.o E.o M.o W.o
 		
 ALLSTGH = F.h D.h E.h M.h W.h
 ALLSTGS = FetchStage.h DecodeStage.h ExecuteStage.h MemoryStage.h WritebackStage.h	
@@ -56,6 +56,7 @@ W.o: $(USLSUS) W.h
 
 clean:
 	rm *.o
+	rm yess
 
 run:
 	make clean

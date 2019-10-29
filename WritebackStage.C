@@ -23,7 +23,7 @@
  * @param: stages - array of stages (FetchStage, DecodeStage, ExecuteStage,
  *         MemoryStage, WritebackStage instances)
  */
-bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
+bool WritebackStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 {
     
         return true;
@@ -33,7 +33,7 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
  *
  * @param: pregs - array of the pipeline register (F, D, E, M, W instances)
  */
-void DecodeStage::doClockHigh(PipeReg ** pregs)
+void WritebackStage::doClockHigh(PipeReg ** pregs)
 {
        
 }

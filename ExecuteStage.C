@@ -5,9 +5,9 @@
 #include "PipeReg.h"
 #include "F.h"
 #include "D.h"
-#include "E.h"
 #include "M.h"
 #include "W.h"
+#include "E.h"
 #include "Stage.h"
 #include "ExecuteStage.h"
 #include "Status.h"
@@ -29,7 +29,7 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
   
       uint64_t stat = ereg->getstat()->getOutput();
       uint64_t icode = ereg->geticode()->getOutput();
-      uint64_t Cnd = ereg->getCnd()->getOutput();
+      uint64_t Cnd = 0;
       uint64_t valE = 0;
       uint64_t valA = ereg->getvalA()->getOutput();
       uint64_t dstE = ereg->getdstE()->getOutput();
@@ -43,7 +43,7 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
  *
  * @param: pregs - array of the pipeline register (F, D, E, M, W instances)
  */
-void DecodeStage::doClockHigh(PipeReg ** pregs)
+void ExecuteStage::doClockHigh(PipeReg ** pregs)
 {
         M * mreg = (M*) pregs[MREG];
         mreg->getstat()->normal();
@@ -60,7 +60,7 @@ void DecodeStage::doClockHigh(PipeReg ** pregs)
  *
 
 */
-void DecodeStage::setMInput(M * mreg, uint64_t stat, uint64_t icode, uint64_t Cnd, uint64_t valE, 
+void ExecuteStage::setMInput(M * mreg, uint64_t stat, uint64_t icode, uint64_t Cnd, uint64_t valE, 
       uint64_t valA, uint64_t dstE, uint64_t dstM)
 {
         mreg->getstat()->setInput(stat);

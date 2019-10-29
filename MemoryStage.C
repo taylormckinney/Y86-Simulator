@@ -31,7 +31,7 @@ bool MemoryStage::doClockLow(PipeReg ** pregs, Stage ** stages)
       uint64_t stat = mreg->getstat()->getOutput();
       uint64_t icode = mreg->geticode()->getOutput();
       uint64_t valE = mreg->getvalE()->getOutput();
-      uint64_t valM = mreg->getvalM()->getOutput();
+      uint64_t valM = 0;
       uint64_t dstE = mreg->getdstE()->getOutput();
       uint64_t dstM = mreg->getdstM()->getOutput();
         
@@ -61,7 +61,7 @@ void MemoryStage::doClockHigh(PipeReg ** pregs)
  * during doClockHigh
  *
 */
-void MemoryStage::setEInput(W* wreg, uint64_t stat, uint64_t icode, uint64_t valE, uint64_t valM, 
+void MemoryStage::setWInput(W* wreg, uint64_t stat, uint64_t icode, uint64_t valE, uint64_t valM, 
       uint64_t dstE, uint64_t dstM)
 {
         wreg->getstat()->setInput(stat);

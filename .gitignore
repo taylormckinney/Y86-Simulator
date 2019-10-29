@@ -3,13 +3,6 @@ lab5
 lab6
 lab7
 yess
-*.idump
-
-*.sdump
-
-/Outputs/*.idump
-
-/Outputs/*.sdump
 Outputs/*
 *.idump
 *.sdump
