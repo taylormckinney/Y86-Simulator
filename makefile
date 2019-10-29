@@ -42,9 +42,8 @@ PipeReg.o: PipeReg.h
 
 PipeRegField.o: PipeRegField.h
 
-Simulate.o: $(ALLSTGH) $(ALLSTGS) Stage.h Simulate.h Memory.h RegisterFile.h\
-		ConditionCodes.h
-		
+Simulate.o: $(ALLSTGH) $(ALLSTGS) Stage.h Simulate.h Memory.h RegisterFile.h ConditionCodes.h
+
 F.o: PipeRegField.h PipeReg.h F.h
 
 D.o: $(USLSUS) D.h
@@ -56,7 +55,7 @@ M.o: $(USLSUS) M.h
 W.o: $(USLSUS) W.h
 
 clean:
-	rm $(OBJ)
+	rm *.o
 
 run:
 	make clean
