@@ -1,2 +1,5 @@
 *.o
 lab5
+Outputs/*
+*.idump
+*.sdump

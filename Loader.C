@@ -18,6 +18,9 @@
 #define DATABEGIN 7   //starting column of data bytes
 #define COMMENT 28    //location of the '|' character 
 #define COLON 5 //location of the ':' character 
+
+uint64_t prevAddr = 0;
+uint64_t prevLength;
 /**
  * Loader constructor
  * Opens the .yo file named in the command line arguments, reads the contents of the file
@@ -109,7 +112,7 @@ void Loader::loadLine(std::string line)
                 addr++; 
             }
         }
-
+        prevAddr = addr;
     }
 }
 
@@ -120,19 +123,21 @@ uint64_t Loader::convertHex(std::string line, int begin, int end) {
     ss >> std::hex >> val;
     return val;
 }
+
+
 /**
  * determines if the line contains any errors
  */
 bool Loader::hasErrors(std::string line)
 {
-    int dataEnd = line.find(' ') - 1;
+    int dataEnd = line.find(' ', DATABEGIN)-1; 
     if(((!isCommentLine(line) && (!validHex(line, DATABEGIN, dataEnd) 
-        || !validHex(line, ADDRBEGIN, ADDREND))) || line[COMMENT] != '|') 
-        && line.length() >0 )
+                        || !validHex(line, ADDRBEGIN, ADDREND))) || line[COMMENT] != '|') 
+            && line.length() >0 )
     {
         return true;
     }
-    if(!isCommentLine(line) && line[COLON] != ':'  && line.length() >0)
+    if(!isCommentLine(line) && (line[COLON] != ':' ||  line[COLON+1] != ' ')  && line.length() >0)
     {
         return true;
     }
@@ -140,6 +145,15 @@ bool Loader::hasErrors(std::string line)
     {
         return true;
     }
+    bool lastWasSpace = true;
+    for(int i= DATABEGIN; i < dataEnd; i++)
+    {
+        if(!lastWasSpace && line[i] == ' ')
+        {
+            return true;
+        }
+    }
+
 
     for(int i=0; i< COMMENT; i++)
     {
@@ -148,8 +162,21 @@ bool Loader::hasErrors(std::string line)
             return true;
         }
     }
-    uint64_t prevAddr = line.substr(ADDRBEGIN, 3);//TODO:CONVERT SUBSTR TO UINT, CHECK THAT ADDR THIS TIME
-    //IS GREATER THAN PREV ADDR
+    if(!isCommentLine(line) && ((dataEnd-DATABEGIN + 1) % 2 != 0 || (dataEnd-DATABEGIN) == 0))
+    {
+        return true;
+    }
+
+    uint64_t addr = convertHex(line, ADDRBEGIN, ADDREND);
+    if(addr + (dataEnd-DATABEGIN) > (0xfff + 1) && !isCommentLine(line))
+    {
+        return true;
+    }
+    if(prevAddr > addr && !isCommentLine(line))
+    {
+        return true;
+    }
+
     return false;
 }
 /**
@@ -177,7 +204,7 @@ bool Loader::validHex(std::string line, int start, int end)
 {
     for(int i= start; i <=end; i++)
     {
-        if(!isxdigit(line[i]))
+        if(!isxdigit(line[i]) && line[i] != ' ')
         {
             return false;
         }
