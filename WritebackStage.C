@@ -13,7 +13,7 @@
 #include "WritebackStage.h"
 #include "Status.h"
 #include "Debug.h"
-
+#include "Instructions.h"
 /*
  * doClockLow:
  * Performs the Execute stage combinational logic that is performed when
@@ -25,8 +25,17 @@
  */
 bool WritebackStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 {
-    
+
+    W * wreg = (W *) pregs[WREG];
+    uint64_t icode = wreg->geticode()->getOutput();
+    if(icode == IHALT)
+    {
         return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 /* doClockHigh
  * applies the appropriate control signal to the register intances
