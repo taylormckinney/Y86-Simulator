@@ -176,6 +176,19 @@ bool Loader::hasErrors(std::string line)
     {
         return true;
     }
+    if (!isCommentLine(line) && validHex(line, DATABEGIN, dataEnd))
+    {
+        for (int i=dataEnd+1; i < COMMENT; i++)
+        {
+            if (line[i] != ' ')
+            {
+                return true;
+            }
+        }
+}
+
+    return false;
+
 
     return false;
 }
