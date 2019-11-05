@@ -32,10 +32,7 @@ bool WritebackStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     {
         return true;
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 /* doClockHigh
  * applies the appropriate control signal to the register intances
