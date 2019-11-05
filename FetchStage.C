@@ -11,11 +11,10 @@
 #include "FetchStage.h"
 #include "Status.h"
 #include "Debug.h"
-
-
-/*
- * doClockLow:
- * Performs the Fetch stage combinational logic that is performed when
+#include "Instructions.h"
+#include "Memory.h"
+#include "Tools.h"
+ /* Performs the Fetch stage combinational logic that is performed when
  * the clock edge is low.
  *
  * @param: pregs - array of the pipeline register sets (F, D, E, M, W instances)
@@ -26,18 +25,39 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 {
    F * freg = (F *) pregs[FREG];
    D * dreg = (D *) pregs[DREG];
+   M * mreg = (M *) pregs[MREG];
+   W * wreg = (W *) pregs[WREG];
+   
+   Memory * mem = Memory::getInstance();
+   
    uint64_t f_pc = 0, icode = 0, ifun = 0, valC = 0, valP = 0;
    uint64_t rA = RNONE, rB = RNONE, stat = SAOK;
+   bool error = 0;
+   
+   f_pc = selectPC(freg, mreg, wreg);
+   
+   icode = Tools::getBits(mem->getByte(f_pc, error), 1, 1);
+   ifun = Tools::getBits(mem->getByte(f_pc, error), 0, 0); 
+   
+   bool needsIds = FetchStage::needRegIds(icode);
+   bool needsValC = FetchStage::needValC(icode);
 
-   //code missing here to select the value of the PC
-   //and fetch the instruction from memory
-   //Fetching the instruction will allow the icode, ifun,
-   //rA, rB, and valC to be set.
-   //The lab assignment describes what methods need to be
-   //written.
+   valP = PCincrement(f_pc, needsIds, needsValC);
+   if(needsIds)
+   {
+       rA =Tools::getBits(mem->getByte(f_pc + 1, error), 1, 1); 
+       rB =Tools::getBits(mem->getByte(f_pc+1, error), 0, 0);
+   }
+   if(needsValC)
+   {
+       if(icode == IJXX || icode == ICALL)
+       {
+           valC = mem->getLong(f_pc+1, error);
+       }
+       valC = mem->getLong(f_pc +2, error);
+   }
 
-   //The value passed to setInput below will need to be changed
-   freg->getpredPC()->setInput(f_pc + 1);
+   freg->getpredPC()->setInput(predictPC(icode, valC, valP));
 
    //provide the input values for the D register
    setDInput(dreg, stat, icode, ifun, rA, rB, valC, valP);
@@ -90,4 +110,64 @@ void FetchStage::setDInput(D * dreg, uint64_t stat, uint64_t icode,
    dreg->getvalC()->setInput(valC);
    dreg->getvalP()->setInput(valP);
 }
-     
+
+uint64_t FetchStage::selectPC(F * freg, M * mreg, W * wreg)
+{
+    uint64_t M_icode = mreg->geticode()->getOutput();
+    uint64_t M_Cnd = mreg->getCnd()->getOutput();
+    uint64_t M_valA = mreg->getvalA()->getOutput();
+    uint64_t W_valM = wreg->getvalM()->getOutput();
+    uint64_t W_icode = wreg->geticode()->getOutput();
+    uint64_t F_predPC = freg->getpredPC()->getOutput();
+    if(M_icode == IJXX && !M_Cnd)
+    {
+        return M_valA;
+    }
+    if(W_icode == IRET)
+    {
+        return W_valM;
+    }
+
+    return F_predPC;
+}
+
+uint64_t FetchStage::predictPC(uint64_t f_icode, uint64_t f_valC, uint64_t f_valP)
+{
+    if(f_icode == IJXX || f_icode == ICALL)
+    {
+        return f_valC;
+    }
+    return f_valP;
+}
+
+bool FetchStage::needRegIds(uint64_t f_icode)
+{
+    return (f_icode == IRRMOVQ || f_icode == IOPQ || f_icode == IPUSHQ || f_icode == IPOPQ
+        || f_icode == IIRMOVQ || f_icode == IRMMOVQ || f_icode == IMRMOVQ);
+}
+
+bool FetchStage::needValC(uint64_t f_icode)
+{
+    return (f_icode == IIRMOVQ || f_icode == IRMMOVQ || f_icode == IMRMOVQ || f_icode == IJXX
+        || f_icode == ICALL);
+}
+
+uint64_t FetchStage::PCincrement(uint64_t f_pc, bool needsIds, bool needsValC)
+{
+    if(!needsIds && !needsValC)
+    {
+        return f_pc +1;
+    }
+    else if(needsIds && !needsValC)
+    {
+        return f_pc+2;
+    }
+    else if(!needsIds && needsValC)
+    {
+        return f_pc +9;
+    }
+    else if (needsIds && needsValC)
+    {
+        return f_pc + 10;
+    }
+}
