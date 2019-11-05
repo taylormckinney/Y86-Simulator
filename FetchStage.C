@@ -36,8 +36,9 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
    
    f_pc = selectPC(freg, mreg, wreg);
    
-   icode = Tools::getBits(mem->getByte(f_pc, error), 1, 1);
-   ifun = Tools::getBits(mem->getByte(f_pc, error), 0, 0); 
+   icode = mem->getByte(f_pc, error);
+   icode = Tools::getBits((uint64_t)icode, 4, 7);
+   ifun = mem->getByte(f_pc, error) & 0x1; 
    
    bool needsIds = FetchStage::needRegIds(icode);
    bool needsValC = FetchStage::needValC(icode);

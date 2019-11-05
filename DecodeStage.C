@@ -33,7 +33,7 @@ bool DecodeStage::doClockLow(PipeReg ** pregs, Stage ** stages)
         
         uint64_t valA =0, valB =0;
         uint64_t dstE = RNONE, dstM = RNONE;
-        uint64_t d_srcA = 0, d_srcB =0;
+        uint64_t d_srcA = RNONE, d_srcB =RNONE;
         
         uint64_t srcA = d_srcA, srcB = d_srcB;
         
