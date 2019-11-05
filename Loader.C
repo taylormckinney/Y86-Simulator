@@ -21,6 +21,7 @@
 
 uint64_t prevAddr = 0;
 uint64_t prevLength;
+
 /**
  * Loader constructor
  * Opens the .yo file named in the command line arguments, reads the contents of the file
@@ -56,13 +57,9 @@ Loader::Loader(int argc, char * argv[])
         loadLine(line);
         lineNumber++;
     }
-
-
-
     //If control reaches here then no error was found and the program
     //was loaded into memory.
     loaded = true;  
-
 }
 
 /**
@@ -124,7 +121,6 @@ uint64_t Loader::convertHex(std::string line, int begin, int end) {
     return val;
 }
 
-
 /**
  * determines if the line contains any errors
  */
@@ -153,8 +149,6 @@ bool Loader::hasErrors(std::string line)
             return true;
         }
     }
-
-
     for(int i=0; i< COMMENT; i++)
     {
         if(!validHex(line, i, i) && line[i] != ' ' && line[i] !=':' && line[i] != 'x')
@@ -166,7 +160,6 @@ bool Loader::hasErrors(std::string line)
     {
         return true;
     }
-
     uint64_t addr = convertHex(line, ADDRBEGIN, ADDREND);
     if(addr + (dataEnd-DATABEGIN) > (0xfff + 1) && !isCommentLine(line))
     {
@@ -186,12 +179,9 @@ bool Loader::hasErrors(std::string line)
             }
         }
 }
-
-    return false;
-
-
     return false;
 }
+
 /**
  * returns true if given line is just a comment line
  *      -entirely blank until COMMENT
