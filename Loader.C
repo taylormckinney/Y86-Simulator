@@ -36,17 +36,15 @@ uint64_t prevLength;
  */
 Loader::Loader(int argc, char * argv[])
 {
-    loaded = false;
     int lineNumber = 1;
     if(!isValidFileName(argv[1]))
     {//if true, file is open; if false, failed to open file
         return;
     }
     inf.open(argv[1]);
-    while(!inf.eof())
+    std::string line;
+    while(std::getline(inf, line))
     {
-        std::string line;
-        std::getline(inf, line);//loads next line from file into 'line'
         //std::cout << line << "\n"; //prints the file line by line
         if(hasErrors(line))
         {
@@ -60,6 +58,7 @@ Loader::Loader(int argc, char * argv[])
     //If control reaches here then no error was found and the program
     //was loaded into memory.
     loaded = true;  
+    inf.close();
 }
 
 /**
