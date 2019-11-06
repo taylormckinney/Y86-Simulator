@@ -8,61 +8,60 @@
 #include "M.h"
 #include "W.h"
 #include "Stage.h"
+#include "Memory.h"
 #include "FetchStage.h"
 #include "Status.h"
 #include "Debug.h"
 #include "Instructions.h"
-#include "Memory.h"
 #include "Tools.h"
- /* Performs the Fetch stage combinational logic that is performed when
+/* Performs the Fetch stage combinational logic that is performed when
  * the clock edge is low.
  *
  * @param: pregs - array of the pipeline register sets (F, D, E, M, W instances)
  * @param: stages - array of stages (FetchStage, DecodeStage, ExecuteStage,
  *         MemoryStage, WritebackStage instances)
  */
+
 bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 {
-   F * freg = (F *) pregs[FREG];
-   D * dreg = (D *) pregs[DREG];
-   M * mreg = (M *) pregs[MREG];
-   W * wreg = (W *) pregs[WREG];
-   
-   Memory * mem = Memory::getInstance();
-   
-   uint64_t f_pc = 0, icode = 0, ifun = 0, valC = 0, valP = 0;
-   uint64_t rA = RNONE, rB = RNONE, stat = SAOK;
-   bool error = 0;
-   
-   f_pc = selectPC(freg, mreg, wreg);
-   
-   icode = mem->getByte(f_pc, error);
-   icode = Tools::getBits((uint64_t)icode, 4, 7);
-   ifun = mem->getByte(f_pc, error) & 0x1; 
-   
-   bool needsIds = FetchStage::needRegIds(icode);
-   bool needsValC = FetchStage::needValC(icode);
+    F * freg = (F *) pregs[FREG];
+    D * dreg = (D *) pregs[DREG];
+    M * mreg = (M *) pregs[MREG];
+    W * wreg = (W *) pregs[WREG];
 
-   valP = PCincrement(f_pc, needsIds, needsValC);
-   if(needsIds)
-   {
-       rA =Tools::getBits(mem->getByte(f_pc + 1, error), 1, 1); 
-       rB =Tools::getBits(mem->getByte(f_pc+1, error), 0, 0);
-   }
-   if(needsValC)
-   {
-       if(icode == IJXX || icode == ICALL)
-       {
-           valC = mem->getLong(f_pc+1, error);
-       }
-       valC = mem->getLong(f_pc +2, error);
-   }
+    Memory * mem = Memory::getInstance();
 
-   freg->getpredPC()->setInput(predictPC(icode, valC, valP));
+    uint64_t icode = 0, ifun = 0, valC = 0, valP = 0;
+    uint64_t rA = RNONE, rB = RNONE, stat = SAOK;
 
-   //provide the input values for the D register
-   setDInput(dreg, stat, icode, ifun, rA, rB, valC, valP);
-   return false;
+    f_pc = selectPC(freg, mreg, wreg);
+
+    icode = mem->getByte(f_pc, memError);
+    icode = Tools::getBits((uint64_t)icode, 4, 7);
+    ifun = mem->getByte(f_pc, memError) & 0x1; 
+    //if memory error, just return out for now
+    if(memError)
+    {
+        return true;
+    }
+    bool needsIds = FetchStage::needRegIds(icode);
+    bool needsValC = FetchStage::needValC(icode);
+
+    valP = PCincrement(f_pc, needsIds, needsValC);
+    if(needsIds)
+    {
+        getRegIds(mem, rA, rB);
+    }
+    if(needsValC)
+    {
+        valC = getValC(mem, icode);
+    }
+
+    freg->getpredPC()->setInput(predictPC(icode, valC, valP));
+
+    //provide the input values for the D register
+    setDInput(dreg, stat, icode, ifun, rA, rB, valC, valP);
+    return false;
 }
 
 /* doClockHigh
@@ -73,17 +72,17 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
  */
 void FetchStage::doClockHigh(PipeReg ** pregs)
 {
-   F * freg = (F *) pregs[FREG];
-   D * dreg = (D *) pregs[DREG];
+    F * freg = (F *) pregs[FREG];
+    D * dreg = (D *) pregs[DREG];
 
-   freg->getpredPC()->normal();
-   dreg->getstat()->normal();
-   dreg->geticode()->normal();
-   dreg->getifun()->normal();
-   dreg->getrA()->normal();
-   dreg->getrB()->normal();
-   dreg->getvalC()->normal();
-   dreg->getvalP()->normal();
+    freg->getpredPC()->normal();
+    dreg->getstat()->normal();
+    dreg->geticode()->normal();
+    dreg->getifun()->normal();
+    dreg->getrA()->normal();
+    dreg->getrB()->normal();
+    dreg->getvalC()->normal();
+    dreg->getvalP()->normal();
 }
 
 /* setDInput
@@ -98,18 +97,18 @@ void FetchStage::doClockHigh(PipeReg ** pregs)
  * @param: rB - value to be stored in the rB pipeline register within D
  * @param: valC - value to be stored in the valC pipeline register within D
  * @param: valP - value to be stored in the valP pipeline register within D
-*/
+ */
 void FetchStage::setDInput(D * dreg, uint64_t stat, uint64_t icode, 
-                           uint64_t ifun, uint64_t rA, uint64_t rB,
-                           uint64_t valC, uint64_t valP)
+        uint64_t ifun, uint64_t rA, uint64_t rB,
+        uint64_t valC, uint64_t valP)
 {
-   dreg->getstat()->setInput(stat);
-   dreg->geticode()->setInput(icode);
-   dreg->getifun()->setInput(ifun);
-   dreg->getrA()->setInput(rA);
-   dreg->getrB()->setInput(rB);
-   dreg->getvalC()->setInput(valC);
-   dreg->getvalP()->setInput(valP);
+    dreg->getstat()->setInput(stat);
+    dreg->geticode()->setInput(icode);
+    dreg->getifun()->setInput(ifun);
+    dreg->getrA()->setInput(rA);
+    dreg->getrB()->setInput(rB);
+    dreg->getvalC()->setInput(valC);
+    dreg->getvalP()->setInput(valP);
 }
 
 uint64_t FetchStage::selectPC(F * freg, M * mreg, W * wreg)
@@ -144,22 +143,18 @@ uint64_t FetchStage::predictPC(uint64_t f_icode, uint64_t f_valC, uint64_t f_val
 bool FetchStage::needRegIds(uint64_t f_icode)
 {
     return (f_icode == IRRMOVQ || f_icode == IOPQ || f_icode == IPUSHQ || f_icode == IPOPQ
-        || f_icode == IIRMOVQ || f_icode == IRMMOVQ || f_icode == IMRMOVQ);
+            || f_icode == IIRMOVQ || f_icode == IRMMOVQ || f_icode == IMRMOVQ);
 }
 
 bool FetchStage::needValC(uint64_t f_icode)
 {
     return (f_icode == IIRMOVQ || f_icode == IRMMOVQ || f_icode == IMRMOVQ || f_icode == IJXX
-        || f_icode == ICALL);
+            || f_icode == ICALL);
 }
 
 uint64_t FetchStage::PCincrement(uint64_t f_pc, bool needsIds, bool needsValC)
 {
-    if(!needsIds && !needsValC)
-    {
-        return f_pc +1;
-    }
-    else if(needsIds && !needsValC)
+    if(needsIds && !needsValC)
     {
         return f_pc+2;
     }
@@ -171,4 +166,27 @@ uint64_t FetchStage::PCincrement(uint64_t f_pc, bool needsIds, bool needsValC)
     {
         return f_pc + 10;
     }
+    return f_pc +1;
+}
+
+void FetchStage::getRegIds(Memory * mem, uint64_t& rA, uint64_t& rB)
+{
+    uint64_t idsByte = mem->getByte(f_pc+1, memError);
+    rA = Tools::getBits(idsByte, 4, 7);
+    rB =Tools::getBits(idsByte, 0, 3);
+}
+
+uint64_t FetchStage::getValC(Memory * mem, uint64_t f_icode)
+{
+    uint64_t addr = f_pc + 2;
+    if(f_icode == IJXX || f_icode == ICALL)
+    { 
+        addr = f_pc+1;
+    }
+    uint8_t bytes[8];
+    for(int i=0; i <8; i++)
+    {
+        bytes[i] = mem->getByte(addr+i, memError);
+    }
+    return Tools::buildLong(bytes);
 }

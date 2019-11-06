@@ -13,6 +13,9 @@
 #include <iostream>
 #include "PipeRegField.h"
 #include "PipeReg.h"
+#include "Memory.h"
+#include "RegisterFile.h"
+#include "ConditionCodes.h"
 #include "F.h"
 #include "D.h"
 #include "E.h"
@@ -25,10 +28,6 @@
 #include "FetchStage.h"
 #include "WritebackStage.h"
 #include "Simulate.h"
-#include "Memory.h"
-#include "RegisterFile.h"
-#include "ConditionCodes.h"
-
 /*
  * Simulate constructor
  *

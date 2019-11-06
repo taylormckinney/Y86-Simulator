@@ -8,7 +8,7 @@ ALLSTGH = F.h D.h E.h M.h W.h
 ALLSTGS = FetchStage.h DecodeStage.h ExecuteStage.h MemoryStage.h WritebackStage.h	
 USLSUS = Instructions.h RegisterFile.h PipeReg.h PipeRegField.h Status.h
 XSTG = RegisterFile.h PipeRegField.h PipeReg.h Stage.h FetchStage.h Status.h\
-		Debug.h
+		Debug.h Memory.h ConditionCodes.h
 
 .C.o:
 	$(CC) $(CFLAGS) $< -o $@

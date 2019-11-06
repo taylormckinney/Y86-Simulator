@@ -13,7 +13,7 @@ RegisterFile * RegisterFile::regInstance = NULL;
  */
 RegisterFile::RegisterFile()
 {
-    for(int i=RAX; i<R14; i++)
+    for(int i=RAX; i<=R14; i++)
     {
         reg[i] = 0;
     }
