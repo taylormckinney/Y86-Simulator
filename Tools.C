@@ -253,8 +253,7 @@ bool Tools::addOverflow(uint64_t op1, uint64_t op2)
 
     uint64_t sum = op1 + op2; 
     
-    return ((signBit1 & signBit2) | (~signBit1 & signBit2)  & (signBit1 ^ (sum >> 63)) 
-        | (signBit1 & signBit2) | (signBit1 & ~signBit2)  & (signBit2 ^ (sum >> 63)));
+    return return ((signBit1 & signBit2) | (~signBit1 & signBit2)) & (signBit1 ^ (sum >> 63));
  
 }
 
