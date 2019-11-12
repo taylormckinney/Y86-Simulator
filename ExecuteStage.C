@@ -24,6 +24,7 @@
  * @param: stages - array of stages (FetchStage, DecodeStage, ExecuteStage,
  *         MemoryStage, WritebackStage instances)
  */
+uint64_t ifun;
 bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 {
     E * ereg = (E*) pregs[EREG];
@@ -38,11 +39,10 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t E_valB = ereg->getvalB()->getOutput();
     uint64_t E_dstE = ereg->getdstE()->getOutput();
     uint64_t E_dstM = ereg->getdstM()->getOutput();
-
+    ifun = E_ifun;
     uint64_t a = getaluA(E_icode, E_valA, E_valC);
     uint64_t b = getaluB(E_icode,E_valB);
     uint64_t e_valE = ALU(a, b, getaluFun(E_icode, E_ifun));
-
     if(set_cc(E_icode))
     {
         CC(a, b, e_valE);
@@ -173,14 +173,18 @@ void ExecuteStage::CC(uint64_t a, uint64_t b, uint64_t aluResult)
     }
 
     cc->setConditionCode(Tools::sign(aluResult), SF, ccError);
-
-     if(Tools::sign(a) == Tools::sign(b) && Tools::sign(a) != Tools::sign(aluResult))
-     {
+    if(Tools::sign(a) == Tools::sign(b) && Tools::sign(a) != Tools::sign(aluResult))
+    {
         cc->setConditionCode(1, OF, ccError);
-     }
-     else
-     {
-         cc->setConditionCode(0, OF, ccError);
-     }
+    }
+    if(Tools::addOverflow(a, b) || Tools::subOverflow(a, b))
+    {
+       cc->setConditionCode(1, OF, ccError);
+    }
+    else
+    {
+        cc->setConditionCode(0, OF, ccError);
+    }
+
 
 }
