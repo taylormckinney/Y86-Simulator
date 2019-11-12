@@ -229,7 +229,7 @@ uint64_t Tools::setByte(uint64_t source, int32_t byteNum)
  */
 uint8_t Tools::sign(uint64_t source)
 {
-    return source>>63;
+    return source>>63 & 0x1;
 }
 
 /**

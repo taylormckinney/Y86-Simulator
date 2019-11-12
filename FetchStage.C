@@ -38,7 +38,8 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 
     icode = mem->getByte(f_pc, memError);
     icode = Tools::getBits((uint64_t)icode, 4, 7);
-    ifun = mem->getByte(f_pc, memError) & 0x1; 
+    ifun = mem->getByte(f_pc, memError);
+    ifun = Tools::getBits((uint64_t)ifun, 0, 3); 
     //if memory error, just return out for now
     if(memError)
     {
