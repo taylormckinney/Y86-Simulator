@@ -16,4 +16,5 @@ I lost track of when we worked on things for a while, I'm sorry. But we worked t
 to develop the structure of the pipeline and implement nops and halts. I completed 
 lab8. 
 
-11/12: Working on lab9 (OPq)
+11/12: Working on lab9 (OPq). Together we hunted down problems in our Tools and figured out how to do the ALU & CC 
+    functions. We are now working on implementing forwarding. 
