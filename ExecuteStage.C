@@ -173,13 +173,17 @@ void ExecuteStage::CC(uint64_t a, uint64_t b, uint64_t aluResult)
     }
 
     cc->setConditionCode(Tools::sign(aluResult), SF, ccError);
-    if(Tools::sign(a) == Tools::sign(b) && Tools::sign(a) != Tools::sign(aluResult))
-    {
-        cc->setConditionCode(1, OF, ccError);
-    }
-    if(Tools::addOverflow(a, b) || Tools::subOverflow(a, b))
+    //if(Tools::sign(a) == Tools::sign(b) && Tools::sign(a) != Tools::sign(aluResult))
+    //{
+    //    cc->setConditionCode(1, OF, ccError);
+    //}
+    if(ifun == ADDQ && Tools::addOverflow(a, b))
     {
        cc->setConditionCode(1, OF, ccError);
+    }
+    else if(ifun == SUBQ && Tools::subOverflow(a,b))
+    {
+        cc->setConditionCode(1, OF, ccError);
     }
     else
     {
