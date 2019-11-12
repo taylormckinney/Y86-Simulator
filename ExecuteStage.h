@@ -8,4 +8,9 @@ class ExecuteStage: public Stage
    public:
       bool doClockLow(PipeReg ** pregs, Stage ** stages);
       void doClockHigh(PipeReg ** pregs);
+      uint64_t aluA(uint64_t instr, uint64_t E_valA, uint64_t E_valC);
+      uint64_t aluB(uint64_t instr, uint64_t E_valB);
+      uint64_t aluFun(uint64_t instr, uint64_t E_ifun);
+      bool set_cc(uint64_t instr);
+      uint64_t gete_dstE(uint64_t instr, uint64_t e_Cnd, uint64_t E_dstE);
 };

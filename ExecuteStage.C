@@ -12,7 +12,7 @@
 #include "ExecuteStage.h"
 #include "Status.h"
 #include "Debug.h"
-
+#include "Instructions.h"
 /*
  * doClockLow:
  * Performs the Execute stage combinational logic that is performed when
@@ -71,4 +71,58 @@ void ExecuteStage::setMInput(M * mreg, uint64_t stat, uint64_t icode, uint64_t C
         mreg->getdstE()->setInput(dstE);
         mreg->getdstM()->setInput(dstM);
             
+}
+
+uint64_t ExecuteStage::aluA(uint64_t instr, uint64_t E_valA, uint64_t E_valC)
+{
+    if(instr == IRRMOVQ || instr == IOPQ)
+    {
+        return E_valA;
+    }
+    if(instr == IIRMOVQ || instr == IRMMOVQ || instr == IMRMOVQ)
+    {
+        return E_valC;
+    }
+    if(instr == ICALL || instr == IPUSHQ)
+    {
+        return -8;
+    }
+    if(instr == IRET || instr == IPOPQ)
+    {
+        return 8;
+    }
+    return 0;
+}
+
+uint64_t ExecuteStage::aluB(uint64_t instr, uint64_t E_valB)
+{
+    if(instr == IRMMOVQ || instr == IMRMOVQ || instr == IOPQ || instr == ICALL
+        || instr == IPUSHQ || instr == IRET || instr == IPOPQ)
+    {
+        return E_valB;
+    }
+    return 0;
+}
+
+uint64_t ExecuteStage::aluFun(uint64_t instr, uint64_t E_ifun)
+{
+    if(instr == IOPQ)
+    {
+        return E_ifun;
+    }
+    return ADDQ;
+}
+
+bool ExecuteStage::set_cc(uint64_t instr)
+{
+    return (instr == IOPQ);
+}
+
+uint64_t ExecuteStage::gete_dstE(uint64_t instr, uint64_t e_Cnd, uint64_t E_dstE)
+{
+    if(instr == IRRMOVQ && !e_Cnd)
+    {
+        return RNONE;
+    }
+    return E_dstE;
 }
