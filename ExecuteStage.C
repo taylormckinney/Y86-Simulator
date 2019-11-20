@@ -24,7 +24,6 @@
  * @param: stages - array of stages (FetchStage, DecodeStage, ExecuteStage,
  *         MemoryStage, WritebackStage instances)
  */
-uint64_t ifun;
 bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 {
     E * ereg = (E*) pregs[EREG];
@@ -39,15 +38,21 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t E_valB = ereg->getvalB()->getOutput();
     uint64_t E_dstE = ereg->getdstE()->getOutput();
     uint64_t E_dstM = ereg->getdstM()->getOutput();
-    ifun = E_ifun;
+    //get ALU inputs
     uint64_t a = getaluA(E_icode, E_valA, E_valC);
     uint64_t b = getaluB(E_icode,E_valB);
-    uint64_t e_valE = ALU(a, b, getaluFun(E_icode, E_ifun));
+
+    e_dstE = E_dstE;
+    //actually send values to ALU:
+    e_valE = ALU(a, b, getaluFun(E_icode, E_ifun));
+    //set CC if necessary:
     if(set_cc(E_icode))
     {
-        CC(a, b, e_valE);
+        CC(a, b, e_valE, E_ifun);
     }
+    //updated M reg
     setMInput(mreg, E_stat, E_icode, e_Cnd, e_valE, E_valA, E_dstE, E_dstM);
+    
     return false;
 }
 /* doClockHigh
@@ -157,9 +162,10 @@ uint64_t ExecuteStage::ALU(uint64_t a, uint64_t b, uint64_t fun)
     {
         return b ^ a;
     }
+    return 0;
 }
 
-void ExecuteStage::CC(uint64_t a, uint64_t b, uint64_t aluResult)
+void ExecuteStage::CC(uint64_t a, uint64_t b, uint64_t aluResult, uint64_t ifun)
 {
     bool ccError;
     ConditionCodes * cc = ConditionCodes::getInstance();
@@ -173,10 +179,6 @@ void ExecuteStage::CC(uint64_t a, uint64_t b, uint64_t aluResult)
     }
 
     cc->setConditionCode(Tools::sign(aluResult), SF, ccError);
-    //if(Tools::sign(a) == Tools::sign(b) && Tools::sign(a) != Tools::sign(aluResult))
-    //{
-    //    cc->setConditionCode(1, OF, ccError);
-    //}
     if(ifun == ADDQ && Tools::addOverflow(a, b))
     {
        cc->setConditionCode(1, OF, ccError);
@@ -189,6 +191,14 @@ void ExecuteStage::CC(uint64_t a, uint64_t b, uint64_t aluResult)
     {
         cc->setConditionCode(0, OF, ccError);
     }
+}
 
+uint64_t ExecuteStage::gete_dstE()
+{
+    return e_dstE;
+}
 
+uint64_t ExecuteStage::gete_valE()
+{
+    return e_valE;
 }

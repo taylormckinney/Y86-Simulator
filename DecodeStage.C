@@ -13,6 +13,7 @@
 #include "Status.h"
 #include "Debug.h"
 #include "Instructions.h"
+#include "ExecuteStage.h"
 /*
  * doClockLow:
  * Performs the Decode stage combinational logic that is performed when
@@ -26,21 +27,25 @@ bool DecodeStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 {
     D * dreg = (D *) pregs[DREG];
     E * ereg = (E *) pregs[EREG];
-    uint64_t stat = dreg->getstat()->getOutput();
-    uint64_t icode = dreg->geticode()->getOutput();
-    uint64_t ifun = dreg->getifun()->getOutput();
-    uint64_t valC = dreg->getvalC()->getOutput();
-    uint64_t rA = dreg->getrA()->getOutput();
-    uint64_t rB = dreg->getrB()->getOutput();
-    uint64_t srcA = getSrcA(icode, rA);
-    uint64_t srcB = getSrcB(icode, rB);
-    uint64_t dstM = getDstM(icode, rA);
-    uint64_t dstE = getDstE(icode, rB);
-    uint64_t valA = selFwdA(srcA);
-    uint64_t valB = forwardB(srcB);
+
+    uint64_t D_stat = dreg->getstat()->getOutput();
+    uint64_t D_icode = dreg->geticode()->getOutput();
+    uint64_t D_ifun = dreg->getifun()->getOutput();
+    uint64_t D_valC = dreg->getvalC()->getOutput();
+    uint64_t D_rA = dreg->getrA()->getOutput();
+    uint64_t D_rB = dreg->getrB()->getOutput();
+
+    uint64_t d_srcA = getSrcA(D_icode, D_rA);
+    uint64_t d_srcB = getSrcB(D_icode, D_rB);
+
+    uint64_t d_dstM = getDstM(D_icode, D_rA);
+    uint64_t d_dstE = getDstE(D_icode, D_rB);
+
+    uint64_t d_valA = selFwdA(d_srcA, pregs, stages);
+    uint64_t d_valB = forwardB(d_srcB, pregs, stages);
 
 
-    setEInput(ereg, stat, icode, ifun, valC, valA, valB, dstE, dstM, srcA, srcB);
+    setEInput(ereg, D_stat, D_icode, D_ifun, D_valC, d_valA, d_valB, d_dstE, d_dstM, d_srcA, d_srcB);
     return false;
 }
 /* doClockHigh
@@ -126,11 +131,56 @@ uint64_t DecodeStage::getDstE(uint64_t instr, uint64_t D_rB)
         return RSP;
     return RNONE;
 }
-uint64_t DecodeStage::selFwdA(uint64_t d_srcA)
+uint64_t DecodeStage::selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages)
 {
+    M * mreg = (M *) pregs[MREG];
+    W * wreg = (W *) pregs[WREG];
+
+    uint64_t e_dstE = ((ExecuteStage *)stages[ESTAGE])->gete_dstE();
+    uint64_t e_valE = ((ExecuteStage *)stages[ESTAGE])->gete_valE();
+    
+    uint64_t M_dstE = mreg->getdstE()->getOutput();
+    uint64_t M_valE = mreg->getvalE()->getOutput();
+    uint64_t W_dstE = wreg->getdstE()->getOutput();
+    uint64_t W_valE = wreg->getvalE()->getOutput();
+    if(d_srcA == e_dstE)
+    {
+        return e_valE;
+    }
+    else if(d_srcA == M_dstE)
+    {
+        return M_valE;
+    }
+    else if(d_srcA == W_dstE)
+    {
+        return W_valE;
+    }
     return reg->readRegister(d_srcA, regError);
 }
-uint64_t DecodeStage::forwardB(uint64_t d_srcB)
+uint64_t DecodeStage::forwardB(uint64_t d_srcB, PipeReg ** pregs, Stage ** stages)
 {
-        return reg->readRegister(d_srcB, regError);
+    M * mreg = (M *) pregs[MREG];
+    W * wreg = (W *) pregs[WREG];
+
+
+    uint64_t e_dstE = ((ExecuteStage *) stages[ESTAGE])->gete_dstE();
+    uint64_t e_valE = ((ExecuteStage *) stages[ESTAGE])->gete_valE();
+    uint64_t M_dstE = mreg->getdstE()->getOutput();
+    uint64_t M_valE = mreg->getvalE()->getOutput();
+    uint64_t W_dstE = wreg->getdstE()->getOutput();
+    uint64_t W_valE = wreg->getvalE()->getOutput();
+    
+    if(d_srcB == e_dstE)
+    {
+        return e_valE;
+    }
+    else if(d_srcB == M_dstE)
+    {
+        return M_valE;
+    }
+    else if(d_srcB == W_dstE)
+    {
+        return W_valE;
+    }
+    return reg->readRegister(d_srcB, regError);
 }
