@@ -1,0 +1,32 @@
+                            | #program that puts the first 15 powers of 2 into the 15 registers 
+                            | 
+0x000: 30f00100000000000000 | irmovq 0x1, %rax
+0x00a: 30f10200000000000000 | irmovq 0x2, %rcx
+0x014: 2012                 | rrmovq %rcx, %rdx
+0x016: 6012                 | addq %rcx, %rdx
+0x018: 6022                 | addq %rdx, %rdx
+0x01a: 6023                 | addq %rdx, %rbx
+0x01c: 6033                 | addq %rbx, %rbx
+0x01e: 6034                 | addq %rbx, %rsp
+0x020: 6044                 | addq %rsp, %rsp
+0x022: 6045                 | addq %rsp, %rbp
+0x024: 6055                 | addq %rbp, %rbp
+0x026: 6056                 | addq %rbp, %rsi
+0x028: 6066                 | addq %rsi, %rsi
+0x02a: 6067                 | addq %rsi, %rdi
+0x02c: 6077                 | addq %rdi, %rdi
+0x02e: 6078                 | addq %rdi, %r8
+0x030: 6088                 | addq %r8, %r8
+0x032: 6089                 | addq %r8, %r9
+0x034: 6099                 | addq %r9, %r9
+0x036: 609a                 | addq %r9, %r10
+0x038: 60aa                 | addq %r10, %r10
+0x03a: 60ab                 | addq %r10, %r11
+0x03c: 60bb                 | addq %r11, %r11
+0x03e: 60bc                 | addq %r11, %r12
+0x040: 60cc                 | addq %r12, %r12
+0x042: 60cd                 | addq %r12, %r13
+0x044: 60dd                 | addq %r13, %r13
+0x046: 60de                 | addq %r13, %r14
+0x048: 60ee                 | addq %r14, %r14
+0x04a: 00                   | halt
