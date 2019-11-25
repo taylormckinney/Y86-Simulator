@@ -17,4 +17,8 @@ to develop the structure of the pipeline and implement nops and halts. I complet
 lab8. 
 
 11/12: Working on lab9 (OPq). Together we hunted down problems in our Tools and figured out how to do the ALU & CC 
-    functions. We are now working on implementing forwarding. 
+    functions. We are now working on implementing forwarding.
+
+11/20: Finally finsihed lab9, got delayed bc of studying for exam 2. OPq is fully
+       implemented and I completed the powers.ys file. 
+  
