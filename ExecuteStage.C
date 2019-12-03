@@ -8,12 +8,12 @@
 #include "M.h"
 #include "W.h"
 #include "E.h"
+#include "ConditionCodes.h"
 #include "Stage.h"
 #include "ExecuteStage.h"
 #include "Status.h"
 #include "Debug.h"
 #include "Instructions.h"
-#include "ConditionCodes.h"
 #include "Tools.h"
 /*
  * doClockLow:
@@ -32,7 +32,6 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t E_stat = ereg->getstat()->getOutput();
     uint64_t E_icode = ereg->geticode()->getOutput();
     uint64_t E_ifun = ereg->getifun()->getOutput();
-    uint64_t e_Cnd = 0;
     uint64_t E_valC = ereg->getvalC()->getOutput(); //set e_valE=E_valC
     uint64_t E_valA = ereg->getvalA()->getOutput();
     uint64_t E_valB = ereg->getvalB()->getOutput();
@@ -50,6 +49,8 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     {
         CC(a, b, e_valE, E_ifun);
     }
+
+    uint64_t e_Cnd = cond(E_icode, E_ifun);
     //updated M reg
     setMInput(mreg, E_stat, E_icode, e_Cnd, e_valE, E_valA, E_dstE, E_dstM);
     
@@ -191,6 +192,49 @@ void ExecuteStage::CC(uint64_t a, uint64_t b, uint64_t aluResult, uint64_t ifun)
     {
         cc->setConditionCode(0, OF, ccError);
     }
+}
+
+uint64_t ExecuteStage::cond(uint64_t icode, uint64_t ifun)
+{
+    bool ccError;
+    ConditionCodes * cc = ConditionCodes::getInstance();
+    uint64_t zf = cc->getConditionCode(ZF, ccError);
+    uint64_t sf = cc->getConditionCode(SF, ccError);
+    uint64_t of = cc->getConditionCode(OF, ccError);
+    
+    if(icode != IJXX && icode != ICMOVXX)
+    {
+        return 0;
+    }
+    else if(ifun == UNCOND)
+     {
+        return 1;
+     }
+     else if(ifun == LESSEQ)
+     {
+         return (sf ^ of) | zf;
+     }
+     else if(ifun == LESS)
+     {
+         return (sf ^ of);
+     }
+     else if(ifun == EQUAL)
+     {
+         return zf;
+     }
+     else if(ifun == NOTEQUAL)
+     {
+         return !zf;
+     }
+     else if(ifun == GREATEREQ)
+     {
+         return !(sf ^ of);
+     }
+     else if(ifun == GREATER)
+     {
+         return !(sf ^ of) & !zf;
+     }
+    return 0;
 }
 
 uint64_t ExecuteStage::gete_dstE()

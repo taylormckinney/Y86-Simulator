@@ -19,4 +19,5 @@ class ExecuteStage: public Stage
       void CC(uint64_t a, uint64_t b, uint64_t aluResult, uint64_t ifun);
       uint64_t gete_dstE();
       uint64_t gete_valE();
+      uint64_t cond(uint64_t icode, uint64_t ifun);
 };
