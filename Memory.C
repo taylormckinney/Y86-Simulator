@@ -5,16 +5,14 @@
 
 //memInstance will be initialized to the single instance
 //of the Memory class
-Memory * Memory::memInstance = NULL;
+Memory *Memory::memInstance = NULL;
 
 /** 
  * Memory constructor
  * initializes the mem array to 0
  */
-Memory::Memory()
-{
-    for(int i=0; i < MEMSIZE; i++)
-    {
+Memory::Memory() {
+    for (int i = 0; i < MEMSIZE; i++) {
         mem[i] = 0;
     }
 }
@@ -26,13 +24,11 @@ Memory::Memory()
  *
  * @return memInstance
  */
-Memory * Memory::getInstance()
-{
-    if(!memInstance)
-    {
+Memory *Memory::getInstance() {
+    if (!memInstance) {
         memInstance = new Memory();
     }
-   return memInstance;
+    return memInstance;
 }
 
 /**
@@ -46,20 +42,17 @@ Memory * Memory::getInstance()
  * @return returns 64-bit word at the specified address or 0 if the
  *         access is not aligned or out of range
  */
-uint64_t Memory::getLong(int32_t address, bool & imem_error)
-{
-    if(address % 8 != 0 || address >= MEMSIZE || address < 0)
-    {
+uint64_t Memory::getLong(int32_t address, bool &imem_error) {
+    if (address % 8 != 0 || address >= MEMSIZE || address < 0) {
         imem_error = true;
         return 0;
     }
     imem_error = false;
     uint8_t bytes[8];
-    for(int i=0; i <8; i++)
-    {
+    for (int i = 0; i < 8; i++) {
         bytes[i] = getByte(address++, imem_error);
     }
-   return Tools::buildLong(bytes);
+    return Tools::buildLong(bytes);
 }
 
 /**
@@ -72,15 +65,13 @@ uint64_t Memory::getLong(int32_t address, bool & imem_error)
  * @return imem_error is set to true or false
  * @return byte at specified address or 0 if the address is out of range
  */
-uint8_t Memory::getByte(int32_t address, bool & imem_error)
-{
-    if(address >= MEMSIZE || address < 0) 
-    {
+uint8_t Memory::getByte(int32_t address, bool &imem_error) {
+    if (address >= MEMSIZE || address < 0) {
         imem_error = true;
         return 0;
     }
     imem_error = 0;
-   return mem[address];
+    return mem[address];
 }
 
 /**
@@ -94,23 +85,20 @@ uint8_t Memory::getByte(int32_t address, bool & imem_error)
  * @param address of 64-bit word; access must be aligned (address % 8 == 0)
  * @return imem_error is set to true or false
  */
-void Memory::putLong(uint64_t value, int32_t address, bool & imem_error)
-{
-    if(address >= MEMSIZE || address < 0 || address % 8 !=0)
-    {
+void Memory::putLong(uint64_t value, int32_t address, bool &imem_error) {
+    if (address >= MEMSIZE || address < 0 || address % 8 != 0) {
         imem_error = true;
         return;
     }
     imem_error = false;
     int8_t val = 0;
-   for(int i =0; i < 8; i++)
-   {
-       val = value & 0x0ff;
-       putByte(val, address++, imem_error);
+    for (int i = 0; i < 8; i++) {
+        val = value & 0x0ff;
+        putByte(val, address++, imem_error);
         value >>= 8;
-   }
-   
-   return;
+    }
+
+    return;
 }
 
 /**
@@ -124,16 +112,14 @@ void Memory::putLong(uint64_t value, int32_t address, bool & imem_error)
  * @return imem_error is set to true or false
  */
 
-void Memory::putByte(uint8_t value, int32_t address, bool & imem_error)
-{
-    if(address >= MEMSIZE || address < 0)
-    {
+void Memory::putByte(uint8_t value, int32_t address, bool &imem_error) {
+    if (address >= MEMSIZE || address < 0) {
         imem_error = true;
         return;
     }
     imem_error = false;
     mem[address] = value;
-   return;
+    return;
 }
 
 /**
@@ -143,39 +129,35 @@ void Memory::putByte(uint8_t value, int32_t address, bool & imem_error)
  * a * after a line to indicate that the values in memory up to the next
  * line displayed are identical.
  */
-void Memory::dump()
-{
-   uint64_t prevLine[4] = {0, 0, 0, 0};
-   uint64_t currLine[4] = {0, 0, 0, 0};
-   int32_t i;
-   bool star = false;
-   bool mem_error;
+void Memory::dump() {
+    uint64_t prevLine[4] = {0, 0, 0, 0};
+    uint64_t currLine[4] = {0, 0, 0, 0};
+    int32_t i;
+    bool star = false;
+    bool mem_error;
 
-   //32 bytes per line (four 8-byte words)
-   for (i = 0; i < MEMSIZE; i+=32)
-   {
-      //get the values for the current line
-      for (int32_t j = 0; j < 4; j++) currLine[j] = getLong(i+j*8, mem_error);
+    //32 bytes per line (four 8-byte words)
+    for (i = 0; i < MEMSIZE; i += 32) {
+        //get the values for the current line
+        for (int32_t j = 0; j < 4; j++) currLine[j] = getLong(i + j * 8, mem_error);
 
-      //if they are the same as the values in the previous line then
-      //don't display them, but always display the first line
-      if (i == 0 || currLine[0] != prevLine[0] || currLine[1] != prevLine[1] 
-          || currLine[2] != prevLine[2] || currLine[3] != prevLine[3])
-      {
-         std::cout << std::endl << std::setw(3) << std::setfill('0') 
-                   << std::hex << i << ": "; 
-         for (int32_t j = 0; j < 4; j++) 
-             std::cout << std::setw(16) << std::setfill('0') 
-                       << std::hex << currLine[j] << " ";
-         star = false;
-      } else
-      {
-         //if this line is exactly like the previous line then
-         //just print a * if one hasn't been printed already
-         if (star == false) std::cout << "*";
-         star = true;
-      }
-      for (int32_t j = 0; j < 4; j++) prevLine[j] = currLine[j];
-   }
-   std::cout << std::endl;
+        //if they are the same as the values in the previous line then
+        //don't display them, but always display the first line
+        if (i == 0 || currLine[0] != prevLine[0] || currLine[1] != prevLine[1]
+            || currLine[2] != prevLine[2] || currLine[3] != prevLine[3]) {
+            std::cout << std::endl << std::setw(3) << std::setfill('0')
+                      << std::hex << i << ": ";
+            for (int32_t j = 0; j < 4; j++)
+                std::cout << std::setw(16) << std::setfill('0')
+                          << std::hex << currLine[j] << " ";
+            star = false;
+        } else {
+            //if this line is exactly like the previous line then
+            //just print a * if one hasn't been printed already
+            if (star == false) std::cout << "*";
+            star = true;
+        }
+        for (int32_t j = 0; j < 4; j++) prevLine[j] = currLine[j];
+    }
+    std::cout << std::endl;
 }
