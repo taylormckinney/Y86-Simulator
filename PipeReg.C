@@ -13,8 +13,7 @@
  * @param: fieldvalue - uint64_t that is output in width columns and padded with 0s
  * @param: newline - if true a newline is output after the fieldname and field value
  */
-void PipeReg::dumpField(std::string fieldname, int width, uint64_t fieldvalue, bool newline)
-{
-   std::cout << fieldname << std::hex << std::setw(width) << std::setfill('0') << fieldvalue;
-   if (newline) std::cout << std::endl;
-}   
+void PipeReg::dumpField(std::string fieldname, int width, uint64_t fieldvalue, bool newline) {
+    std::cout << fieldname << std::hex << std::setw(width) << std::setfill('0') << fieldvalue;
+    if (newline) std::cout << std::endl;
+}
