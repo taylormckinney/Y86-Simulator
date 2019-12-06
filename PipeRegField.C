@@ -1,16 +1,15 @@
 #include <cstdint>
 #include "PipeRegField.h"
 
-/* 
+/*
  * PipeRegField constructor
  *
  * initialize the PipeRegField
  * default value is 0 if no parameter is given
 */
-PipeRegField::PipeRegField(int state)
-{
-   input = 0;
-   this->state = state;
+PipeRegField::PipeRegField(int state) {
+    input = 0;
+    this->state = state;
 }
 
 /*
@@ -19,9 +18,8 @@ PipeRegField::PipeRegField(int state)
  * @param value to be stored in input data field
  *
 */
-void PipeRegField::setInput(uint64_t input)
-{
-   this->input = input;
+void PipeRegField::setInput(uint64_t input) {
+    this->input = input;
 }
 
 /*
@@ -29,9 +27,8 @@ void PipeRegField::setInput(uint64_t input)
  *
  * @return the state data field
 */
-uint64_t PipeRegField::getOutput()
-{
-   return state;
+uint64_t PipeRegField::getOutput() {
+    return state;
 }
 
 /*
@@ -41,10 +38,9 @@ uint64_t PipeRegField::getOutput()
  * to a pipelined register by setting state
  * to the input
 */
-void PipeRegField::normal()
-{
-   state = input;
-} 
+void PipeRegField::normal() {
+    state = input;
+}
 
 /*
  * stall
@@ -53,10 +49,9 @@ void PipeRegField::normal()
  * of the pipelined register
  *
 */
-void PipeRegField::stall()
-{
-   //do nothing
-} 
+void PipeRegField::stall() {
+    //do nothing
+}
 
 /*
  * bubble
@@ -66,9 +61,7 @@ void PipeRegField::stall()
  * a nop instruction (SAOK, RNONE, INOP)
  *
  * @param value to set state to (SAOK, RNONE, or INOP)
-*/  
-void PipeRegField::bubble(int state)
-{
-   this->state = state;
+*/
+void PipeRegField::bubble(int state) {
+    this->state = state;
 }
-
