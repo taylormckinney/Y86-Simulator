@@ -37,7 +37,6 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t E_valB = ereg->getvalB()->getOutput();
     uint64_t E_dstE = ereg->getdstE()->getOutput();
     uint64_t E_dstM = ereg->getdstM()->getOutput();
-    e_dstE = E_dstE;
     
     //get ALU inputs
     uint64_t a = getaluA(E_icode, E_valA, E_valC);
@@ -52,8 +51,9 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     }
 
     uint64_t e_Cnd = cond(E_icode, E_ifun);
+    e_dstE = gete_dstE(E_icode, e_Cnd, E_dstE);
     //updated M reg
-    setMInput(mreg, E_stat, E_icode, e_Cnd, e_valE, E_valA, E_dstE, E_dstM);
+    setMInput(mreg, E_stat, E_icode, e_Cnd, e_valE, E_valA, e_dstE, E_dstM);
     
     return false;
 }

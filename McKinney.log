@@ -16,9 +16,13 @@ I lost track of when we worked on things for a while, I'm sorry. But we worked t
 to develop the structure of the pipeline and implement nops and halts. I completed 
 lab8. 
 
-11/12: Working on lab9 (OPq). Together we hunted down problems in our Tools and figured out how to do the ALU & CC 
-    functions. We are now working on implementing forwarding.
+11/12: Working on lab9 (OPq). Together we hunted down problems in our Tools and figured out how to do 
+       the ALU & CC functions. We are now working on implementing forwarding.
 
 11/20: Finally finsihed lab9, got delayed bc of studying for exam 2. OPq is fully
        implemented and I completed the powers.ys file. 
-  
+ 
+We forgot to keep track of logs again, sorry! But we've been pair-coding and working through the
+problems together in various meetings throughout the weeks.
+
+12/6: Working together to finish lab 10.
