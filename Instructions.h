@@ -26,4 +26,3 @@
 #define NOTEQUAL 4
 #define GREATEREQ 5
 #define GREATER 6
-

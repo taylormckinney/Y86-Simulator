@@ -10,16 +10,15 @@
 #define NUMPIPEREGS 5
 
 //base class for the F, D, E, M, W pipeline registers
-class PipeReg
-{
-   public:
-      //dump method is implemented in the classes that descend
-      //from PipeReg
-      //
-      //dump is abstract
-      //virtual makes it polymorphic 
-      virtual void dump() = 0;
-   protected:
-      void dumpField(std::string label, int width, uint64_t value, bool nl);
-};
+class PipeReg {
+public:
+    //dump method is implemented in the classes that descend
+    //from PipeReg
+    //
+    //dump is abstract
+    //virtual makes it polymorphic 
+    virtual void dump() = 0;
 
+protected:
+    void dumpField(std::string label, int width, uint64_t value, bool nl);
+};

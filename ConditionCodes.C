@@ -5,14 +5,13 @@
 
 //cc_instance will be initialized to reference the single 
 //instance of ConditionCodes
-ConditionCodes * ConditionCodes::ccInstance = NULL;
+ConditionCodes *ConditionCodes::ccInstance = NULL;
 
 /**
  * ConditionCodes constructor
  * initialize the codes field to 0
  */
-ConditionCodes::ConditionCodes()
-{
+ConditionCodes::ConditionCodes() {
     codes = 0;
 }
 
@@ -24,10 +23,8 @@ ConditionCodes::ConditionCodes()
  *
  * @return ccInstance
  */
-ConditionCodes * ConditionCodes::getInstance()
-{
-    if(ccInstance == NULL)
-    {
+ConditionCodes *ConditionCodes::getInstance() {
+    if (ccInstance == NULL) {
         ConditionCodes::ccInstance = new ConditionCodes();
 
     }
@@ -45,15 +42,11 @@ ConditionCodes * ConditionCodes::getInstance()
  * @return error is set to true if ccNum is out of range and
  *         false otherwise
  */
-bool ConditionCodes::getConditionCode(int32_t ccNum, bool & error)
-{
-    if(ccNum != OF && ccNum != SF && ccNum != ZF)
-    {
+bool ConditionCodes::getConditionCode(int32_t ccNum, bool &error) {
+    if (ccNum != OF && ccNum != SF && ccNum != ZF) {
         error = true;
         return false;
-    }
-    else
-    {
+    } else {
         error = false;
         return Tools::getBits(codes, ccNum, ccNum);
     }
@@ -71,23 +64,16 @@ bool ConditionCodes::getConditionCode(int32_t ccNum, bool & error)
  * @return error is set to true if ccNum is out of range and
  *         false otherwise
  */
-void ConditionCodes::setConditionCode(bool value, int32_t ccNum, 
-        bool & error)
-{
-    if(ccNum !=OF && ccNum != SF && ccNum != ZF)
-    {
+void ConditionCodes::setConditionCode(bool value, int32_t ccNum,
+                                      bool &error) {
+    if (ccNum != OF && ccNum != SF && ccNum != ZF) {
         error = true;
-        return;    
-    }
-    else
-    {
-        error= false;
-        if(value)
-        {
-            codes = Tools::setBits(codes, ccNum, ccNum);     
-        }
-        else
-        {
+        return;
+    } else {
+        error = false;
+        if (value) {
+            codes = Tools::setBits(codes, ccNum, ccNum);
+        } else {
             codes = Tools::clearBits(codes, ccNum, ccNum);
         }
     }
@@ -100,8 +86,7 @@ void ConditionCodes::setConditionCode(bool value, int32_t ccNum,
  * dump
  * outputs the values of the condition codes
  */
-void ConditionCodes::dump()
-{
+void ConditionCodes::dump() {
     int32_t zf = Tools::getBits(codes, ZF, ZF);
     int32_t sf = Tools::getBits(codes, SF, SF);
     int32_t of = Tools::getBits(codes, OF, OF);
