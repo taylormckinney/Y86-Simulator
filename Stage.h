@@ -7,13 +7,12 @@
 //five stages: FetchStage, DecodeStage, ExecuteStage,
 //             MemoryStage, WritebackStage
 #define NUMSTAGES 5
-class Stage
-{
-   public:
-      //abstract methods implemented in the descendant classes
-      //virtual makes these methods polymorphic       
-      virtual bool doClockLow(PipeReg ** pregs, Stage ** stages) = 0;
-      virtual void doClockHigh(PipeReg ** pregs) = 0;
+
+class Stage {
+public:
+    //abstract methods implemented in the descendant classes
+    //virtual makes these methods polymorphic       
+    virtual bool doClockLow(PipeReg **pregs, Stage **stages) = 0;
+
+    virtual void doClockHigh(PipeReg **pregs) = 0;
 };
-
-
