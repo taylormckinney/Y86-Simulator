@@ -12,15 +12,13 @@
  *
  * initialize the F pipeline register 
 */
-F::F()
-{
-   predPC = new PipeRegField();
+F::F() {
+    predPC = new PipeRegField();
 }
 
 /* return the predPC pipeline register field */
-PipeRegField * F::getpredPC()
-{
-   return predPC;
+PipeRegField *F::getpredPC() {
+    return predPC;
 }
 
 /* 
@@ -28,7 +26,6 @@ PipeRegField * F::getpredPC()
  *
  * outputs the current values of the F pipeline register
 */
-void F::dump()
-{
-   dumpField("F: predPC: ", 3, predPC->getOutput(), true);
+void F::dump() {
+    dumpField("F: predPC: ", 3, predPC->getOutput(), true);
 }
