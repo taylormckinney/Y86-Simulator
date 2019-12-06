@@ -28,15 +28,15 @@ bool MemoryStage::doClockLow(PipeReg ** pregs, Stage ** stages)
         M * mreg = (M *) pregs[MREG];
         W * wreg = (W *) pregs[WREG];
       
-      uint64_t stat = mreg->getstat()->getOutput();
-      uint64_t icode = mreg->geticode()->getOutput();
-      uint64_t valE = mreg->getvalE()->getOutput();
-      uint64_t valM = 0;
-      uint64_t dstE = mreg->getdstE()->getOutput();
-      uint64_t dstM = mreg->getdstM()->getOutput();
+      uint64_t M_stat = mreg->getstat()->getOutput();
+      uint64_t M_icode = mreg->geticode()->getOutput();
+      uint64_t M_valE = mreg->getvalE()->getOutput();
+      uint64_t m_valM = 0;
+      uint64_t M_dstE = mreg->getdstE()->getOutput();
+      uint64_t M_dstM = mreg->getdstM()->getOutput();
         
         
-        setWInput(wreg, stat, icode, valE, valM, dstE, dstM);
+        setWInput(wreg, M_stat, M_icode, M_valE, m_valM, M_dstE, M_dstM);
         return false;
 }
 /* doClockHigh
@@ -71,4 +71,27 @@ void MemoryStage::setWInput(W* wreg, uint64_t stat, uint64_t icode, uint64_t val
         wreg->getdstE()->setInput(dstE);
         wreg->getdstM()->setInput(dstM);
             
+}
+
+uint64_t MemoryStage::memAddr(uint64_t instr, uint64_t M_valE, uint64_t M_valA)
+{
+    if(instr == IRMMOVQ || instr == IPUSHQ || instr == ICALL|| instr == IMRMOVQ)
+    {
+        return M_valE;
+    }
+    else if (instr == IPOPQ || instr == IRET)
+    {
+        return M_valA;
+    }
+    return 0;
+}
+
+bool MemoryStage::memRead(uint64_t instr)
+{
+    return (instr == IMRMOVQ || instr == IPOPQ || instr == IRET);
+}
+
+bool MemoryStage::memWrite(uint64_t instr)
+{
+        return (instr == IRMMOVQ || instr == IPUSHQ || instr == ICALL);
 }
