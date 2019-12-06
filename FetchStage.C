@@ -59,6 +59,8 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 
     freg->getpredPC()->setInput(predictPC(f_icode, f_valC, f_valP));
     
+    f_stat = getf_stat(f_icode, memError);
+    
     //provide the input values for the D register
     setDInput(dreg, f_stat, f_icode, f_ifun, f_rA, f_rB, f_valC, f_valP);
     return false;
@@ -216,5 +218,17 @@ uint64_t FetchStage::getf_ifun(bool memError, uint64_t mem_ifun)
 
 uint64_t FetchStage::getf_stat(uint64_t f_icode, bool memError)
 {
-
+    if(memError)
+    {
+        return SADR;
+    }
+    if(!instrValid(f_icode))
+    {
+        return SINS;
+    }
+    if(f_icode == IHALT)
+    {
+        return SHLT;
+    }
+    return SAOK;
 }
