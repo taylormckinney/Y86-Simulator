@@ -40,7 +40,7 @@ bool MemoryStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t M_dstM = mreg->getdstM()->getOutput();
 
     uint64_t addr = memAddr(M_icode, M_valE, M_valA);  
-
+    m_valM = 0;
     if(memRead(M_icode))
     {
         m_valM = mem->getLong(addr, memError);
