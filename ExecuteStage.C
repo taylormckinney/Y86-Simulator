@@ -37,11 +37,12 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t E_valB = ereg->getvalB()->getOutput();
     uint64_t E_dstE = ereg->getdstE()->getOutput();
     uint64_t E_dstM = ereg->getdstM()->getOutput();
+    e_dstE = E_dstE;
+    
     //get ALU inputs
     uint64_t a = getaluA(E_icode, E_valA, E_valC);
     uint64_t b = getaluB(E_icode,E_valB);
 
-    e_dstE = E_dstE;
     //actually send values to ALU:
     e_valE = ALU(a, b, getaluFun(E_icode, E_ifun));
     //set CC if necessary:

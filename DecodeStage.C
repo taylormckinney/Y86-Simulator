@@ -143,7 +143,11 @@ uint64_t DecodeStage::selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages
     uint64_t M_valE = mreg->getvalE()->getOutput();
     uint64_t W_dstE = wreg->getdstE()->getOutput();
     uint64_t W_valE = wreg->getvalE()->getOutput();
-    if(d_srcA == e_dstE)
+    if (d_srcA == RNONE)
+    {
+        return 0;
+    }
+    else if(d_srcA == e_dstE)
     {
         return e_valE;
     }
@@ -169,8 +173,11 @@ uint64_t DecodeStage::forwardB(uint64_t d_srcB, PipeReg ** pregs, Stage ** stage
     uint64_t M_valE = mreg->getvalE()->getOutput();
     uint64_t W_dstE = wreg->getdstE()->getOutput();
     uint64_t W_valE = wreg->getvalE()->getOutput();
-    
-    if(d_srcB == e_dstE)
+    if(d_srcB == RNONE)
+     {
+         return 0;
+     }
+    else if(d_srcB == e_dstE)
     {
         return e_valE;
     }
