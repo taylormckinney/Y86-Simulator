@@ -27,8 +27,8 @@ bool WritebackStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 {
 
     W * wreg = (W *) pregs[WREG];
-    uint64_t icode = wreg->geticode()->getOutput();
-    if(icode == IHALT)
+    uint64_t W_icode = wreg->geticode()->getOutput();
+    if(W_icode == IHALT)
     {
         return true;
     }
@@ -45,5 +45,9 @@ void WritebackStage::doClockHigh(PipeReg ** pregs)
     W * wreg = (W *) pregs[WREG];
     uint64_t W_valE = wreg->getvalE()->getOutput();
     uint64_t W_dstE = wreg->getdstE()->getOutput();
+    uint64_t W_valM = wreg->getvalM()->getOutput();
+    uint64_t W_dstM = wreg->getdstM()->getOutput();
+
     reg->writeRegister(W_valE, W_dstE, regError);       
+    reg->writeRegister(W_valM, W_dstM, regError);
 }
