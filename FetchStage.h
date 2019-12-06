@@ -18,8 +18,8 @@ class FetchStage: public Stage
       uint64_t PCincrement(uint64_t f_pc, bool needsRegIds, bool needsValC);
       void getRegIds(Memory * mem, uint64_t& rA, uint64_t& rB);
       uint64_t getValC(Memory * mem, uint64_t f_icode);
-      uint64_t f_stat(uint64_t f_icode, bool memError);
-      uint64_t f_icode(bool mem_error, uint64_t mem_icode);
-      uint64_t f_ifun(bool mem_error, uint64_t mem_ifun);
+      uint64_t getf_stat(uint64_t f_icode, bool memError);
+      uint64_t getf_icode(bool mem_error, uint64_t mem_icode);
+      uint64_t getf_ifun(bool mem_error, uint64_t mem_ifun);
       bool instrValid(uint64_t f_icode);
 };
