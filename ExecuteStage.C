@@ -11,6 +11,7 @@
 #include "ConditionCodes.h"
 #include "Stage.h"
 #include "ExecuteStage.h"
+#include "MemoryStage.h"
 #include "Status.h"
 #include "Debug.h"
 #include "Instructions.h"
@@ -28,6 +29,7 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 {
     E * ereg = (E*) pregs[EREG];
     M * mreg = (M*) pregs[MREG];
+    W * wreg = (W*) pregs[WREG];
 
     uint64_t E_stat = ereg->getstat()->getOutput();
     uint64_t E_icode = ereg->geticode()->getOutput();
@@ -37,24 +39,32 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t E_valB = ereg->getvalB()->getOutput();
     uint64_t E_dstE = ereg->getdstE()->getOutput();
     uint64_t E_dstM = ereg->getdstM()->getOutput();
-    
+
+    uint64_t m_stat = ((MemoryStage *) stages[MSTAGE])->getm_stat();
+    uint64_t W_stat = wreg->getstat()->getOutput();
+
     //get ALU inputs
     uint64_t a = getaluA(E_icode, E_valA, E_valC);
     uint64_t b = getaluB(E_icode,E_valB);
 
     //actually send values to ALU:
     e_valE = ALU(a, b, getaluFun(E_icode, E_ifun));
+
     //set CC if necessary:
-    if(set_cc(E_icode))
+    if(set_cc(E_icode, m_stat, W_stat))
     {
         CC(a, b, e_valE, E_ifun);
     }
 
+    M_bubble = calculateControlSignals(m_stat, W_stat);
+
     uint64_t e_Cnd = cond(E_icode, E_ifun);
+
     e_dstE = gete_dstE(E_icode, e_Cnd, E_dstE);
+
     //updated M reg
     setMInput(mreg, E_stat, E_icode, e_Cnd, e_valE, E_valA, e_dstE, E_dstM);
-    
+
     return false;
 }
 /* doClockHigh
@@ -65,13 +75,26 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 void ExecuteStage::doClockHigh(PipeReg ** pregs)
 {
     M * mreg = (M*) pregs[MREG];
-    mreg->getstat()->normal();
-    mreg->geticode()->normal();
-    mreg->getCnd()->normal();
-    mreg->getvalE()->normal();
-    mreg->getvalA()->normal();
-    mreg->getdstE()->normal();
-    mreg->getdstM()->normal();
+    if(M_bubble)
+    {
+        mreg->getstat()->bubble(SAOK);
+        mreg->geticode()->bubble(INOP);
+        mreg->getCnd()->bubble();
+        mreg->getvalE()->bubble();
+        mreg->getvalA()->bubble();
+        mreg->getdstE()->bubble(RNONE);
+        mreg->getdstM()->bubble(RNONE);
+    }
+    else 
+    {
+        mreg->getstat()->normal();
+        mreg->geticode()->normal();
+        mreg->getCnd()->normal();
+        mreg->getvalE()->normal();
+        mreg->getvalA()->normal();
+        mreg->getdstE()->normal();
+        mreg->getdstM()->normal();
+    }
 }
 /* setMInput
  * provides the input to potentially be stored in the M register
@@ -132,9 +155,9 @@ uint64_t ExecuteStage::getaluFun(uint64_t instr, uint64_t E_ifun)
     return ADDQ;
 }
 
-bool ExecuteStage::set_cc(uint64_t instr)
+bool ExecuteStage::set_cc(uint64_t instr, uint64_t m_stat, uint64_t W_stat)
 {
-    return (instr == IOPQ);
+    return (instr == IOPQ && (m_stat == SAOK) && (W_stat == SAOK));
 }
 
 uint64_t ExecuteStage::gete_dstE(uint64_t instr, uint64_t e_Cnd, uint64_t E_dstE)
@@ -183,7 +206,7 @@ void ExecuteStage::CC(uint64_t a, uint64_t b, uint64_t aluResult, uint64_t ifun)
     cc->setConditionCode(Tools::sign(aluResult), SF, ccError);
     if(ifun == ADDQ && Tools::addOverflow(a, b))
     {
-       cc->setConditionCode(1, OF, ccError);
+        cc->setConditionCode(1, OF, ccError);
     }
     else if(ifun == SUBQ && Tools::subOverflow(a,b))
     {
@@ -202,48 +225,42 @@ uint64_t ExecuteStage::cond(uint64_t icode, uint64_t ifun)
     uint64_t zf = cc->getConditionCode(ZF, ccError);
     uint64_t sf = cc->getConditionCode(SF, ccError);
     uint64_t of = cc->getConditionCode(OF, ccError);
-    
+
     if(icode != IJXX && icode != ICMOVXX)
     {
         return 0;
     }
     else if(ifun == UNCOND)
-     {
+    {
         return 1;
-     }
-     else if(ifun == LESSEQ)
-     {
-         return (sf ^ of) | zf;
-     }
-     else if(ifun == LESS)
-     {
-         return (sf ^ of);
-     }
-     else if(ifun == EQUAL)
-     {
-         return zf;
-     }
-     else if(ifun == NOTEQUAL)
-     {
-         return !zf;
-     }
-     else if(ifun == GREATEREQ)
-     {
-         return !(sf ^ of);
-     }
-     else if(ifun == GREATER)
-     {
-         return !(sf ^ of) & !zf;
-     }
+    }
+    else if(ifun == LESSEQ)
+    {
+        return (sf ^ of) | zf;
+    }
+    else if(ifun == LESS)
+    {
+        return (sf ^ of);
+    }
+    else if(ifun == EQUAL)
+    {
+        return zf;
+    }
+    else if(ifun == NOTEQUAL)
+    {
+        return !zf;
+    }
+    else if(ifun == GREATEREQ)
+    {
+        return !(sf ^ of);
+    }
+    else if(ifun == GREATER)
+    {
+        return !(sf ^ of) & !zf;
+    }
     return 0;
 }
-
-uint64_t ExecuteStage::gete_dstE()
+bool ExecuteStage::calculateControlSignals(uint64_t m_stat, uint64_t W_stat)
 {
-    return e_dstE;
-}
-
-uint64_t ExecuteStage::gete_valE()
-{
-    return e_valE;
+    return (m_stat != SAOK || W_stat != SAOK);
 }

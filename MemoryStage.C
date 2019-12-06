@@ -49,7 +49,10 @@ bool MemoryStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     {
         mem->putLong(M_valA, addr, memError);
     }
-    setWInput(wreg, M_stat, M_icode, M_valE, m_valM, M_dstE, M_dstM);
+    
+    m_stat = getm_stat(memError, M_stat);
+
+    setWInput(wreg, m_stat, M_icode, M_valE, m_valM, M_dstE, M_dstM);
     return false;
 }
 /* doClockHigh
@@ -108,8 +111,11 @@ bool MemoryStage::memWrite(uint64_t instr)
 {
     return (instr == IRMMOVQ || instr == IPUSHQ || instr == ICALL);
 }
-
-uint64_t MemoryStage::getm_valM()
+uint64_t MemoryStage::getm_stat(bool memError, uint64_t M_stat)
 {
-    return m_valM;
+    if(memError)
+    {
+        return SADR;
+    }
+    return M_stat;
 }
