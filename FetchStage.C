@@ -31,37 +31,36 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 
     Memory * mem = Memory::getInstance();
 
-    uint64_t icode = 0, ifun = 0, valC = 0, valP = 0;
-    uint64_t rA = RNONE, rB = RNONE, stat = SAOK;
+    uint64_t f_icode = 0, f_ifun = 0, f_valC = 0, f_valP = 0;
+    uint64_t f_rA = RNONE, f_rB = RNONE, f_stat = SAOK;
 
     f_pc = selectPC(freg, mreg, wreg);
 
-    icode = mem->getByte(f_pc, memError);
-    icode = Tools::getBits((uint64_t)icode, 4, 7);
-    ifun = mem->getByte(f_pc, memError);
-    ifun = Tools::getBits((uint64_t)ifun, 0, 3); 
-    //if memory error, just return out for now
-    if(memError)
-    {
-        return true;
-    }
-    bool needsIds = FetchStage::needRegIds(icode);
-    bool needsValC = FetchStage::needValC(icode);
+    uint64_t mem_icode = mem->getByte(f_pc, memError);
+    mem_icode = Tools::getBits((uint64_t)mem_icode, 4, 7);
+    f_icode = getf_icode(memError, mem_icode); 
+    
+    uint64_t mem_ifun = mem->getByte(f_pc, memError);
+    mem_ifun = Tools::getBits((uint64_t)mem_ifun, 0, 3);
+    f_ifun = getf_ifun(memError, mem_ifun); 
+    
+    bool needsIds = FetchStage::needRegIds(f_icode);
+    bool needsValC = FetchStage::needValC(f_icode);
 
-    valP = PCincrement(f_pc, needsIds, needsValC);
+    f_valP = PCincrement(f_pc, needsIds, needsValC);
     if(needsIds)
     {
-        getRegIds(mem, rA, rB);
+        getRegIds(mem, f_rA, f_rB);
     }
     if(needsValC)
     {
-        valC = getValC(mem, icode);
+        f_valC = getValC(mem, f_icode);
     }
 
-    freg->getpredPC()->setInput(predictPC(icode, valC, valP));
-
+    freg->getpredPC()->setInput(predictPC(f_icode, f_valC, f_valP));
+    
     //provide the input values for the D register
-    setDInput(dreg, stat, icode, ifun, rA, rB, valC, valP);
+    setDInput(dreg, f_stat, f_icode, f_ifun, f_rA, f_rB, f_valC, f_valP);
     return false;
 }
 
@@ -190,4 +189,32 @@ uint64_t FetchStage::getValC(Memory * mem, uint64_t f_icode)
         bytes[i] = mem->getByte(addr+i, memError);
     }
     return Tools::buildLong(bytes);
+}
+
+bool FetchStage::instrValid(uint64_t f_icode)
+{
+    return (f_icode >= IHALT && f_icode <= IPOPQ); 
+}
+
+uint64_t FetchStage::getf_icode(bool memError, uint64_t mem_icode)
+{
+    if(memError)
+    {
+        return INOP;
+    }
+    return mem_icode;
+}
+
+uint64_t FetchStage::getf_ifun(bool memError, uint64_t mem_ifun)
+{
+    if(memError)
+    {
+        return INOP;
+    }
+    return mem_ifun;
+}
+
+uint64_t FetchStage::getf_stat(uint64_t f_icode, bool memError)
+{
+
 }
