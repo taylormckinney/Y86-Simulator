@@ -14,6 +14,7 @@
 #include "Debug.h"
 #include "Instructions.h"
 #include "ExecuteStage.h"
+#include "MemoryStage.h"
 /*
  * doClockLow:
  * Performs the Decode stage combinational logic that is performed when
@@ -138,11 +139,19 @@ uint64_t DecodeStage::selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages
 
     uint64_t e_dstE = ((ExecuteStage *)stages[ESTAGE])->gete_dstE();
     uint64_t e_valE = ((ExecuteStage *)stages[ESTAGE])->gete_valE();
-    
+
     uint64_t M_dstE = mreg->getdstE()->getOutput();
     uint64_t M_valE = mreg->getvalE()->getOutput();
+
+    uint64_t M_dstM = mreg->getdstM()->getOutput();
+    uint64_t M_valM = ((MemoryStage *) stages[MSTAGE])->getm_valM();
+
     uint64_t W_dstE = wreg->getdstE()->getOutput();
     uint64_t W_valE = wreg->getvalE()->getOutput();
+
+    uint64_t W_dstM = wreg->getdstM()->getOutput();
+    uint64_t W_valM = wreg->getvalM()->getOutput();
+
     if (d_srcA == RNONE)
     {
         return 0;
@@ -151,9 +160,17 @@ uint64_t DecodeStage::selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages
     {
         return e_valE;
     }
+    else if(d_srcA == M_dstM)
+    {
+        return M_valM;
+    }
     else if(d_srcA == M_dstE)
     {
         return M_valE;
+    }
+    else if(d_srcA == W_dstM)
+    {
+        return W_valM;
     }
     else if(d_srcA == W_dstE)
     {
@@ -169,21 +186,38 @@ uint64_t DecodeStage::forwardB(uint64_t d_srcB, PipeReg ** pregs, Stage ** stage
 
     uint64_t e_dstE = ((ExecuteStage *) stages[ESTAGE])->gete_dstE();
     uint64_t e_valE = ((ExecuteStage *) stages[ESTAGE])->gete_valE();
+
     uint64_t M_dstE = mreg->getdstE()->getOutput();
     uint64_t M_valE = mreg->getvalE()->getOutput();
+
+    uint64_t M_dstM = mreg->getdstM()->getOutput();
+    uint64_t M_valM = ((MemoryStage *) stages[MSTAGE])->getm_valM();
+
     uint64_t W_dstE = wreg->getdstE()->getOutput();
     uint64_t W_valE = wreg->getvalE()->getOutput();
+
+    uint64_t W_dstM = wreg->getdstM()->getOutput();
+    uint64_t W_valM = wreg->getvalM()->getOutput();
+
     if(d_srcB == RNONE)
-     {
-         return 0;
-     }
+    {
+        return 0;
+    }
     else if(d_srcB == e_dstE)
     {
         return e_valE;
     }
+    else if(d_srcB == M_dstM)
+    {
+        return M_valM;
+    }
     else if(d_srcB == M_dstE)
     {
         return M_valE;
+    }
+    else if(d_srcB == W_dstM)
+    {
+        return W_valM;
     }
     else if(d_srcB == W_dstE)
     {

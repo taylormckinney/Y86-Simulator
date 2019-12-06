@@ -35,7 +35,6 @@ bool MemoryStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t M_stat = mreg->getstat()->getOutput();
     uint64_t M_icode = mreg->geticode()->getOutput();
     uint64_t M_valE = mreg->getvalE()->getOutput();
-    uint64_t m_valM = 0;
     uint64_t M_valA = mreg->getvalA()->getOutput();
     uint64_t M_dstE = mreg->getdstE()->getOutput();
     uint64_t M_dstM = mreg->getdstM()->getOutput();
@@ -108,4 +107,9 @@ bool MemoryStage::memRead(uint64_t instr)
 bool MemoryStage::memWrite(uint64_t instr)
 {
     return (instr == IRMMOVQ || instr == IPUSHQ || instr == ICALL);
+}
+
+uint64_t MemoryStage::getm_valM()
+{
+    return m_valM;
 }
