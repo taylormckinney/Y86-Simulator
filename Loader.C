@@ -11,7 +11,7 @@
 
 #include "Loader.h"
 #include "Memory.h"
-
+#include "Status.h"
 //first column in file is assumed to be 0
 #define ADDRBEGIN 2   //starting column of 3 digit hex address 
 #define ADDREND 4     //ending column of 3 digit hext address
