@@ -19,4 +19,10 @@ class DecodeStage: public Stage
         uint64_t getDstE(uint64_t instr, uint64_t D_rB);
         uint64_t selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages);
         uint64_t forwardB(uint64_t d_srcB, PipeReg ** pregs, Stage ** stages);
+        // iv. in lab 10
+        uint64_t d_ValA(uint64_t instr, uint64_t D_valP, uint64_t e_valE, 
+                uint64_t e_valE, uint64_t m_valM, uint64_t M_valE,
+                uint64_t W_valM, uint64_t W_valE);
+        uint64_t d_valB(uint64_t e_valE, uint64_t m_valM, uint64_t M_valE,
+                uint64_t W_valM, uint64_t W_valE);
 };
