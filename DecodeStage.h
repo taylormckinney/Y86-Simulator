@@ -21,4 +21,6 @@ class DecodeStage: public Stage
         uint64_t forwardB(uint64_t d_srcB, PipeReg ** pregs, Stage ** stages);
         uint64_t getd_srcA(){return d_srcA;}
         uint64_t getd_srcB(){return d_srcB;}
+        uint64_t gete_bubble(uint64_t e_icode, uint64_t e_dstM, uint64_t d_srcA,
+                uint64_t d_srcB);
 };
