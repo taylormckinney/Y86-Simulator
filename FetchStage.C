@@ -9,9 +9,9 @@
 #include "M.h"
 #include "W.h"
 #include "Stage.h"
+#include "DecodeStage.h"
 #include "Memory.h"
 #include "FetchStage.h"
-#include "DecodeStage.h"
 #include "Status.h"
 #include "Debug.h"
 #include "Instructions.h"
@@ -42,11 +42,11 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t mem_icode = mem->getByte(f_pc, memError);
     mem_icode = Tools::getBits((uint64_t)mem_icode, 4, 7);
     f_icode = getf_icode(memError, mem_icode); 
-    
+
     uint64_t mem_ifun = mem->getByte(f_pc, memError);
     mem_ifun = Tools::getBits((uint64_t)mem_ifun, 0, 3);
     f_ifun = getf_ifun(memError, mem_ifun); 
-    
+
     bool needsIds = FetchStage::needRegIds(f_icode);
     bool needsValC = FetchStage::needValC(f_icode);
 
@@ -61,12 +61,12 @@ bool FetchStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     }
 
     freg->getpredPC()->setInput(predictPC(f_icode, f_valC, f_valP));
-    
+
     f_stat = getf_stat(f_icode, memError);
 
-    DecodeStage * dstage = (DecodeStage *) stages[DSTAGE];
+    DecodeStage * dstage = (DecodeStage *)stages[DSTAGE];
     calculateControlSignals(ereg, dstage);
-    
+
     //provide the input values for the D register
     setDInput(dreg, f_stat, f_icode, f_ifun, f_rA, f_rB, f_valC, f_valP);
     return false;
@@ -82,15 +82,35 @@ void FetchStage::doClockHigh(PipeReg ** pregs)
 {
     F * freg = (F *) pregs[FREG];
     D * dreg = (D *) pregs[DREG];
+    if(F_stall)
+    {
+        freg->getpredPC()->stall();
+    }
+    else
+    {
+        freg->getpredPC()->normal();
+    }
 
-    freg->getpredPC()->normal();
-    dreg->getstat()->normal();
-    dreg->geticode()->normal();
-    dreg->getifun()->normal();
-    dreg->getrA()->normal();
-    dreg->getrB()->normal();
-    dreg->getvalC()->normal();
-    dreg->getvalP()->normal();
+    if(D_stall)
+    {
+        dreg->getstat()->stall();
+        dreg->geticode()->stall();
+        dreg->getifun()->stall();
+        dreg->getrA()->stall();
+        dreg->getrB()->stall();
+        dreg->getvalC()->stall();
+        dreg->getvalP()->stall();
+    }
+    else
+    {
+        dreg->getstat()->normal();
+        dreg->geticode()->normal();
+        dreg->getifun()->normal();
+        dreg->getrA()->normal();
+        dreg->getrB()->normal();
+        dreg->getvalC()->normal();
+        dreg->getvalP()->normal();
+    }
 }
 
 /* setDInput
