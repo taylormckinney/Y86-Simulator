@@ -6,3 +6,4 @@ yess
 Outputs/*
 *.idump
 *.sdump
+*error*
