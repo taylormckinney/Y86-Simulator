@@ -9,7 +9,7 @@ class DecodeStage: public Stage
 
         RegisterFile * reg = RegisterFile::getInstance();
         bool regError;
-
+        uint64_t d_srcA, d_srcB;
     public:
         bool doClockLow(PipeReg ** pregs, Stage ** stages);
         void doClockHigh(PipeReg ** pregs);
@@ -20,6 +20,9 @@ class DecodeStage: public Stage
         uint64_t selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages);
         uint64_t forwardB(uint64_t d_srcB, PipeReg ** pregs, Stage ** stages);
         bool gete_bubble(uint64_t e_icode, uint64_t e_dstM, uint64_t d_srcA,
+        uint64_t getd_srcA(){return d_srcA;}
+        uint64_t getd_srcB(){return d_srcB;}
+        uint64_t gete_bubble(uint64_t e_icode, uint64_t e_dstM, uint64_t d_srcA,
                 uint64_t d_srcB);
         // for jxx implementation
         //bool gete_bubble(uint64_t e_icode, uint64_t e_Cnd, uint64_t e_dstM,
