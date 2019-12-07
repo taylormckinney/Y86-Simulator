@@ -29,7 +29,7 @@ class FetchStage: public Stage
       bool getd_stall(uint64_t e_icode, uint64_t e_dstM, uint64_t d_srcA,
                   uint64_t d_srcB);
       // for jxx implementation
-      bool getd_bubble(uint64_t e_icode, e_Cnd);
+      bool getd_bubble(uint64_t e_icode,uint64_t e_Cnd);
       // for call/ret implementation
       //bool getf_stall(uint64_t e_icode, uint64_t e_dstM, uint64_t d_srcA,
       //           uint64_t d_srcB, uint64_t d_icode, uint64_t e_icode,

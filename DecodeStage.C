@@ -9,11 +9,11 @@
 #include "M.h"
 #include "W.h"
 #include "Stage.h"
+#include "ExecuteStage.h"
 #include "DecodeStage.h"
 #include "Status.h"
 #include "Debug.h"
 #include "Instructions.h"
-#include "ExecuteStage.h"
 #include "MemoryStage.h"
 /*
  * doClockLow:
@@ -45,7 +45,7 @@ bool DecodeStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t d_valA = selFwdA(d_srcA, pregs, stages);
     uint64_t d_valB = forwardB(d_srcB, pregs, stages);
 
-    calculateControlSignals(pregs);
+    calculateControlSignals(pregs, stages);
 
     setEInput(ereg, D_stat, D_icode, D_ifun, D_valC, d_valA, d_valB, d_dstE, d_dstM, d_srcA, d_srcB);
     return false;
@@ -243,16 +243,18 @@ uint64_t DecodeStage::forwardB(uint64_t d_srcB, PipeReg ** pregs, Stage ** stage
     return reg->readRegister(d_srcB, regError);
 }
 
-bool DecodeStage::gete_bubble(uint64_t E_icode, uint64_t E_dstM)
+bool DecodeStage::gete_bubble(uint64_t E_icode, uint64_t e_Cnd, uint64_t E_dstM)
 {
-    return ( (E_icode == IMRMOVQ || E_icode == IPOPQ) && 
-            (E_dstM == d_srcA || E_dstM == d_srcB) );
+    return ( E_icode == IJXX && !e_Cnd) || ((E_icode == IMRMOVQ || E_icode == IPOPQ)
+           && (E_dstM == d_srcA || E_dstM == d_srcB) );
 }
 
-void DecodeStage::calculateControlSignals(PipeReg ** regs)
+void DecodeStage::calculateControlSignals(PipeReg ** regs, Stage ** stages)
 {
+    ExecuteStage * estage = (ExecuteStage *) stages[ESTAGE];
     E * ereg = (E*) regs[EREG];
     uint64_t E_icode = ereg->geticode()->getOutput();
     uint64_t E_dstM = ereg->getdstM()->getOutput();
-    E_bubble = gete_bubble(E_icode, E_dstM);
+    uint64_t e_Cnd = estage->gete_Cnd();
+    E_bubble = gete_bubble(E_icode, e_Cnd, E_dstM);
 }

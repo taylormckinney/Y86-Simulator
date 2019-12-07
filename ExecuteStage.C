@@ -58,7 +58,7 @@ bool ExecuteStage::doClockLow(PipeReg ** pregs, Stage ** stages)
 
     M_bubble = calculateControlSignals(m_stat, W_stat);
 
-    uint64_t e_Cnd = cond(E_icode, E_ifun);
+    e_Cnd = cond(E_icode, E_ifun);
 
     e_dstE = gete_dstE(E_icode, e_Cnd, E_dstE);
 
