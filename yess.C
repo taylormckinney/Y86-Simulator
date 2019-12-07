@@ -1,4 +1,4 @@
-/* 
+/*
  * Driver for the yess simulator
  * Usage: yess <file>.yo [-D]
  *
@@ -22,23 +22,20 @@
 
 int debug = 0;
 
-int main(int argc, char * argv[])
-{
-   //check to see if the -D option was provided 
-   if (argc >= 3 && (strcmp(argv[2], "-D") == 0)) debug = 1;
+int main(int argc, char *argv[]) {
+    //check to see if the -D option was provided
+    if (argc >= 3 && (strcmp(argv[2], "-D") == 0)) debug = 1;
 
-   Memory * mem = Memory::getInstance();
-   Loader load(argc, argv);
-   if (!load.isLoaded())
-   {
-      std::cout << "Load error.\nUsage: yess <file.yo>\n";
-      if (mem != NULL) mem->dump();
-      return 0;
-   }
-  
-   Simulate simulate;
-   simulate.run(); 
-   
-   return 0;
+    Memory *mem = Memory::getInstance();
+    Loader load(argc, argv);
+    if (!load.isLoaded()) {
+        std::cout << "Load error.\nUsage: yess <file.yo>\n";
+        if (mem != NULL) mem->dump();
+        return 0;
+    }
+
+    Simulate simulate;
+    simulate.run();
+
+    return 0;
 }
-
