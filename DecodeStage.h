@@ -21,11 +21,9 @@ class DecodeStage: public Stage
         uint64_t getDstE(uint64_t instr, uint64_t D_rB);
         uint64_t selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages);
         uint64_t forwardB(uint64_t d_srcB, PipeReg ** pregs, Stage ** stages);
-        bool gete_bubble(uint64_t e_icode, uint64_t e_dstM);
         uint64_t getd_srcA(){return d_srcA;};
         uint64_t getd_srcB(){return d_srcB;};
         void calculateControlSignals(PipeReg ** pregs);
         // for jxx implementation
-        //bool gete_bubble(uint64_t e_icode, uint64_t e_Cnd, uint64_t e_dstM,
-        //        uint64_t d_srcA, uint64_t d_srcB);i
+        bool gete_bubble(uint64_t e_icode, uint64_t e_Cnd, uint64_t e_dstM);
 };
