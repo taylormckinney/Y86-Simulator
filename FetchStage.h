@@ -22,4 +22,6 @@ class FetchStage: public Stage
       uint64_t getf_icode(bool mem_error, uint64_t mem_icode);
       uint64_t getf_ifun(bool mem_error, uint64_t mem_ifun);
       bool instrValid(uint64_t f_icode);
+      bool getf_stall(uint64_t e_icode);
+      bool getd_stall(uint64_t e_icode);
 };
