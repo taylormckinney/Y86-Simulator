@@ -38,5 +38,4 @@ class FetchStage: public Stage
       //           uint64_t d_srcA, uint64_t d_srcB, uint64_t
       // bool getd_bubble(uint64_t e_icode);
      void calculateControlSignals(E * ereg, DecodeStage * dstage);
->>>>>>> c1705a69484814b51dd61320652a611f2777a662
 };
