@@ -26,5 +26,12 @@ class FetchStage: public Stage
             uint64_t d_srcB);
       bool getd_stall(uint64_t e_icode, uint64_t e_dstM,
                   uint64_t d_srcB);
-      // bool getd_bubble(uint64_t e_icode);
+      // for jxx implementation
+      //bool getd_bubble(uint64_t e_icode, e_Cnd);
+      // for call/ret implementation
+      //bool getf_stall(uint64_t e_icode, uint64_t e_dstM, uint64_t d_srcA,
+      //           uint64_t d_srcB, uint64_t d_icode, uint64_t e_icode,
+      //           uint64_t m_icode);
+      //bool getd_bubble(uint64_t e_icode, uint64_t e_Cnd, uint64_t e_dstM,
+      //           uint64_t d_srcA, uint64_t d_srcB, uint64_t
 };
