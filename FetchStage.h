@@ -9,7 +9,7 @@ class FetchStage: public Stage
                      uint64_t rA, uint64_t rB,
                      uint64_t valC, uint64_t valP);
       bool F_stall, D_stall;
-
+      bool D_bubble;
    public:
       bool doClockLow(PipeReg ** pregs, Stage ** stages);
       void doClockHigh(PipeReg ** pregs);
@@ -37,5 +37,5 @@ class FetchStage: public Stage
       //bool getd_bubble(uint64_t e_icode, uint64_t e_Cnd, uint64_t e_dstM,
       //           uint64_t d_srcA, uint64_t d_srcB, uint64_t
       // bool getd_bubble(uint64_t e_icode);
-     void calculateControlSignals(E * ereg, DecodeStage * dstage);
+     void calculateControlSignals(E * ereg, DecodeStage * dstage, ExecuteStage * estage);
 };

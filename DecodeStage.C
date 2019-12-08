@@ -153,7 +153,14 @@ uint64_t DecodeStage::selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages
 {
     M * mreg = (M *) pregs[MREG];
     W * wreg = (W *) pregs[WREG];
+    D * dreg = (D *) pregs[DREG];
 
+    uint64_t D_icode = dreg->geticode()->getOutput();
+    if(D_icode == IJXX)
+    {
+        uint64_t D_valP = dreg->getvalP()->getOutput();
+        return D_valP;
+    }
     uint64_t e_dstE = ((ExecuteStage *)stages[ESTAGE])->gete_dstE();
     uint64_t e_valE = ((ExecuteStage *)stages[ESTAGE])->gete_valE();
 
@@ -169,6 +176,7 @@ uint64_t DecodeStage::selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages
     uint64_t W_dstM = wreg->getdstM()->getOutput();
     uint64_t W_valM = wreg->getvalM()->getOutput();
 
+    
     if (d_srcA == RNONE)
     {
         return 0;
