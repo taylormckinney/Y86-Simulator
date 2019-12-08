@@ -24,12 +24,12 @@ class FetchStage: public Stage
       uint64_t getf_icode(bool mem_error, uint64_t mem_icode);
       uint64_t getf_ifun(bool mem_error, uint64_t mem_ifun);
       bool instrValid(uint64_t f_icode);
-      bool getf_stall(uint64_t e_icode, uint64_t e_dstM, uint64_t d_srcA,
-            uint64_t d_srcB);
-      bool getd_stall(uint64_t e_icode, uint64_t e_dstM, uint64_t d_srcA,
-                  uint64_t d_srcB);
+      bool getf_stall(uint64_t E_icode, uint64_t E_dstM, uint64_t D_icode, uint64_t M_icode, 
+            uint64_t d_srcA, uint64_t d_srcB);
+      bool getd_stall(uint64_t E_icode, uint64_t E_dstM, uint64_t d_srcA, uint64_t d_srcB);
       // for jxx implementation
-      bool getd_bubble(uint64_t e_icode,uint64_t e_Cnd);
+      bool getd_bubble(uint64_t E_icode,uint64_t e_Cnd, uint64_t E_dstM, uint64_t D_icode, uint64_t M_icode, 
+            uint64_t d_srcA, uint64_t d_srcB);
       // for call/ret implementation
       //bool getf_stall(uint64_t e_icode, uint64_t e_dstM, uint64_t d_srcA,
       //           uint64_t d_srcB, uint64_t d_icode, uint64_t e_icode,
@@ -37,5 +37,5 @@ class FetchStage: public Stage
       //bool getd_bubble(uint64_t e_icode, uint64_t e_Cnd, uint64_t e_dstM,
       //           uint64_t d_srcA, uint64_t d_srcB, uint64_t
       // bool getd_bubble(uint64_t e_icode);
-     void calculateControlSignals(E * ereg, DecodeStage * dstage, ExecuteStage * estage);
+     void calculateControlSignals(PipeReg ** pregs, DecodeStage * dstage, ExecuteStage * estage);
 };

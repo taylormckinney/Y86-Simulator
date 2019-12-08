@@ -42,8 +42,8 @@ bool DecodeStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     uint64_t d_dstM = getDstM(D_icode, D_rA);
     uint64_t d_dstE = getDstE(D_icode, D_rB);
 
-    uint64_t d_valA = selFwdA(d_srcA, pregs, stages);
-    uint64_t d_valB = forwardB(d_srcB, pregs, stages);
+    uint64_t d_valA = selFwdA(pregs, stages);
+    uint64_t d_valB = forwardB(pregs, stages);
 
     calculateControlSignals(pregs, stages);
 
@@ -122,17 +122,25 @@ void DecodeStage::setEInput(E * ereg, uint64_t stat, uint64_t icode, uint64_t if
 uint64_t DecodeStage::getSrcA(uint64_t instr, uint64_t D_rA)
 {
     if(instr == IOPQ || instr == IRMMOVQ || instr == IRRMOVQ || instr == IPUSHQ)
-        return D_rA;
+        {
+            return D_rA;
+        }
     if(instr == IPOPQ || instr == IRET)
-        return RSP;
+        {
+            return RSP;
+        }
     return RNONE;
 }
 uint64_t DecodeStage::getSrcB(uint64_t instr, uint64_t D_rB)
 {
     if(instr == IOPQ || instr == IRMMOVQ || instr == IMRMOVQ)
-        return D_rB;
+        {
+            return D_rB;
+        }
     if(instr == IPUSHQ || instr == IPOPQ || instr == ICALL || instr == IRET)
-        return RSP;
+        {
+            return RSP;
+        }
     return RNONE;
 }
 uint64_t DecodeStage::getDstM(uint64_t instr, uint64_t D_rA)
@@ -149,14 +157,14 @@ uint64_t DecodeStage::getDstE(uint64_t instr, uint64_t D_rB)
         return RSP;
     return RNONE;
 }
-uint64_t DecodeStage::selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages)
+uint64_t DecodeStage::selFwdA(PipeReg ** pregs, Stage ** stages)
 {
     M * mreg = (M *) pregs[MREG];
     W * wreg = (W *) pregs[WREG];
     D * dreg = (D *) pregs[DREG];
 
     uint64_t D_icode = dreg->geticode()->getOutput();
-    if(D_icode == IJXX)
+    if(D_icode == IJXX || D_icode == ICALL)
     {
         uint64_t D_valP = dreg->getvalP()->getOutput();
         return D_valP;
@@ -203,7 +211,7 @@ uint64_t DecodeStage::selFwdA(uint64_t d_srcA, PipeReg ** pregs, Stage ** stages
     }
     return reg->readRegister(d_srcA, regError);
 }
-uint64_t DecodeStage::forwardB(uint64_t d_srcB, PipeReg ** pregs, Stage ** stages)
+uint64_t DecodeStage::forwardB(PipeReg ** pregs, Stage ** stages)
 {
     M * mreg = (M *) pregs[MREG];
     W * wreg = (W *) pregs[WREG];
