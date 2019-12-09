@@ -15,6 +15,7 @@
 #include "Debug.h"
 #include "Instructions.h"
 #include "MemoryStage.h"
+
 /*
  * doClockLow:
  * Performs the Decode stage combinational logic that is performed when
@@ -24,10 +25,9 @@
  * @param: stages - array of stages (FetchStage, DecodeStage, ExecuteStage,
  *         MemoryStage, WritebackStage instances)
  */
-bool DecodeStage::doClockLow(PipeReg ** pregs, Stage ** stages)
-{
-    D * dreg = (D *) pregs[DREG];
-    E * ereg = (E *) pregs[EREG];
+bool DecodeStage::doClockLow(PipeReg **pregs, Stage **stages) {
+    D *dreg = (D *) pregs[DREG];
+    E *ereg = (E *) pregs[EREG];
 
     uint64_t D_stat = dreg->getstat()->getOutput();
     uint64_t D_icode = dreg->geticode()->getOutput();
@@ -50,19 +50,18 @@ bool DecodeStage::doClockLow(PipeReg ** pregs, Stage ** stages)
     setEInput(ereg, D_stat, D_icode, D_ifun, D_valC, d_valA, d_valB, d_dstE, d_dstM, d_srcA, d_srcB);
     return false;
 }
+
 /* doClockHigh
  * applies the appropriate control signal to the D
  * and E register intances
  *
  * @param: pregs - array of the pipeline register (F, D, E, M, W instances)
  */
-void DecodeStage::doClockHigh(PipeReg ** pregs)
-{
-    E * ereg = (E *) pregs[EREG];
-    if(E_bubble)
-    {
-         ereg->getstat()->bubble(SAOK);
-         ereg->geticode()->bubble(INOP);
+void DecodeStage::doClockHigh(PipeReg **pregs) {
+    E *ereg = (E *) pregs[EREG];
+    if (E_bubble) {
+        ereg->getstat()->bubble(SAOK);
+        ereg->geticode()->bubble(INOP);
         ereg->getifun()->bubble();
         ereg->getvalC()->bubble();
         ereg->getvalA()->bubble();
@@ -71,9 +70,7 @@ void DecodeStage::doClockHigh(PipeReg ** pregs)
         ereg->getdstM()->bubble(RNONE);
         ereg->getsrcA()->bubble(RNONE);
         ereg->getsrcB()->bubble(RNONE);
-    }
-    else 
-    {
+    } else {
         ereg->getstat()->normal();
         ereg->geticode()->normal();
         ereg->getifun()->normal();
@@ -87,6 +84,7 @@ void DecodeStage::doClockHigh(PipeReg ** pregs)
 
     }
 }
+
 /* setDInput
  * provides the input to potentially be stored in the D register
  * during doClockHigh
@@ -103,10 +101,9 @@ void DecodeStage::doClockHigh(PipeReg ** pregs)
  * @param: srcA - value to be stored in the srcA pipeline register within E
  * @param: srcB - value to be stored in the srcB pipeline register within E
  */
-void DecodeStage::setEInput(E * ereg, uint64_t stat, uint64_t icode, uint64_t ifun,
-        uint64_t valC, uint64_t valA, uint64_t valB, uint64_t dstE,
-        uint64_t dstM, uint64_t srcA, uint64_t srcB)
-{
+void DecodeStage::setEInput(E *ereg, uint64_t stat, uint64_t icode, uint64_t ifun,
+                            uint64_t valC, uint64_t valA, uint64_t valB, uint64_t dstE,
+                            uint64_t dstM, uint64_t srcA, uint64_t srcB) {
     ereg->getstat()->setInput(stat);
     ereg->geticode()->setInput(icode);
     ereg->getifun()->setInput(ifun);
@@ -119,58 +116,53 @@ void DecodeStage::setEInput(E * ereg, uint64_t stat, uint64_t icode, uint64_t if
     ereg->getsrcB()->setInput(srcB);
 
 }
-uint64_t DecodeStage::getSrcA(uint64_t instr, uint64_t D_rA)
-{
-    if(instr == IOPQ || instr == IRMMOVQ || instr == IRRMOVQ || instr == IPUSHQ)
-        {
-            return D_rA;
-        }
-    if(instr == IPOPQ || instr == IRET)
-        {
-            return RSP;
-        }
+
+uint64_t DecodeStage::getSrcA(uint64_t instr, uint64_t D_rA) {
+    if (instr == IOPQ || instr == IRMMOVQ || instr == IRRMOVQ || instr == IPUSHQ) {
+        return D_rA;
+    }
+    if (instr == IPOPQ || instr == IRET) {
+        return RSP;
+    }
     return RNONE;
 }
-uint64_t DecodeStage::getSrcB(uint64_t instr, uint64_t D_rB)
-{
-    if(instr == IOPQ || instr == IRMMOVQ || instr == IMRMOVQ)
-        {
-            return D_rB;
-        }
-    if(instr == IPUSHQ || instr == IPOPQ || instr == ICALL || instr == IRET)
-        {
-            return RSP;
-        }
+
+uint64_t DecodeStage::getSrcB(uint64_t instr, uint64_t D_rB) {
+    if (instr == IOPQ || instr == IRMMOVQ || instr == IMRMOVQ) {
+        return D_rB;
+    }
+    if (instr == IPUSHQ || instr == IPOPQ || instr == ICALL || instr == IRET) {
+        return RSP;
+    }
     return RNONE;
 }
-uint64_t DecodeStage::getDstM(uint64_t instr, uint64_t D_rA)
-{
-    if(instr == IMRMOVQ || instr == IPOPQ)
+
+uint64_t DecodeStage::getDstM(uint64_t instr, uint64_t D_rA) {
+    if (instr == IMRMOVQ || instr == IPOPQ)
         return D_rA;
     return RNONE;
 }
-uint64_t DecodeStage::getDstE(uint64_t instr, uint64_t D_rB)
-{
-    if(instr == IIRMOVQ || instr == IOPQ || instr == IRRMOVQ)
+
+uint64_t DecodeStage::getDstE(uint64_t instr, uint64_t D_rB) {
+    if (instr == IIRMOVQ || instr == IOPQ || instr == IRRMOVQ)
         return D_rB;
-    if(instr == IPUSHQ || instr == IPOPQ || instr == ICALL || instr == IRET)
+    if (instr == IPUSHQ || instr == IPOPQ || instr == ICALL || instr == IRET)
         return RSP;
     return RNONE;
 }
-uint64_t DecodeStage::selFwdA(PipeReg ** pregs, Stage ** stages)
-{
-    M * mreg = (M *) pregs[MREG];
-    W * wreg = (W *) pregs[WREG];
-    D * dreg = (D *) pregs[DREG];
+
+uint64_t DecodeStage::selFwdA(PipeReg **pregs, Stage **stages) {
+    M *mreg = (M *) pregs[MREG];
+    W *wreg = (W *) pregs[WREG];
+    D *dreg = (D *) pregs[DREG];
 
     uint64_t D_icode = dreg->geticode()->getOutput();
-    if(D_icode == IJXX || D_icode == ICALL)
-    {
+    if (D_icode == IJXX || D_icode == ICALL) {
         uint64_t D_valP = dreg->getvalP()->getOutput();
         return D_valP;
     }
-    uint64_t e_dstE = ((ExecuteStage *)stages[ESTAGE])->gete_dstE();
-    uint64_t e_valE = ((ExecuteStage *)stages[ESTAGE])->gete_valE();
+    uint64_t e_dstE = ((ExecuteStage *) stages[ESTAGE])->gete_dstE();
+    uint64_t e_valE = ((ExecuteStage *) stages[ESTAGE])->gete_valE();
 
     uint64_t M_dstE = mreg->getdstE()->getOutput();
     uint64_t M_valE = mreg->getvalE()->getOutput();
@@ -184,37 +176,26 @@ uint64_t DecodeStage::selFwdA(PipeReg ** pregs, Stage ** stages)
     uint64_t W_dstM = wreg->getdstM()->getOutput();
     uint64_t W_valM = wreg->getvalM()->getOutput();
 
-    
-    if (d_srcA == RNONE)
-    {
+
+    if (d_srcA == RNONE) {
         return 0;
-    }
-    else if(d_srcA == e_dstE)
-    {
+    } else if (d_srcA == e_dstE) {
         return e_valE;
-    }
-    else if(d_srcA == M_dstM)
-    {
+    } else if (d_srcA == M_dstM) {
         return M_valM;
-    }
-    else if(d_srcA == M_dstE)
-    {
+    } else if (d_srcA == M_dstE) {
         return M_valE;
-    }
-    else if(d_srcA == W_dstM)
-    {
+    } else if (d_srcA == W_dstM) {
         return W_valM;
-    }
-    else if(d_srcA == W_dstE)
-    {
+    } else if (d_srcA == W_dstE) {
         return W_valE;
     }
     return reg->readRegister(d_srcA, regError);
 }
-uint64_t DecodeStage::forwardB(PipeReg ** pregs, Stage ** stages)
-{
-    M * mreg = (M *) pregs[MREG];
-    W * wreg = (W *) pregs[WREG];
+
+uint64_t DecodeStage::forwardB(PipeReg **pregs, Stage **stages) {
+    M *mreg = (M *) pregs[MREG];
+    W *wreg = (W *) pregs[WREG];
 
 
     uint64_t e_dstE = ((ExecuteStage *) stages[ESTAGE])->gete_dstE();
@@ -232,43 +213,30 @@ uint64_t DecodeStage::forwardB(PipeReg ** pregs, Stage ** stages)
     uint64_t W_dstM = wreg->getdstM()->getOutput();
     uint64_t W_valM = wreg->getvalM()->getOutput();
 
-    if(d_srcB == RNONE)
-    {
+    if (d_srcB == RNONE) {
         return 0;
-    }
-    else if(d_srcB == e_dstE)
-    {
+    } else if (d_srcB == e_dstE) {
         return e_valE;
-    }
-    else if(d_srcB == M_dstM)
-    {
+    } else if (d_srcB == M_dstM) {
         return M_valM;
-    }
-    else if(d_srcB == M_dstE)
-    {
+    } else if (d_srcB == M_dstE) {
         return M_valE;
-    }
-    else if(d_srcB == W_dstM)
-    {
+    } else if (d_srcB == W_dstM) {
         return W_valM;
-    }
-    else if(d_srcB == W_dstE)
-    {
+    } else if (d_srcB == W_dstE) {
         return W_valE;
     }
     return reg->readRegister(d_srcB, regError);
 }
 
-bool DecodeStage::gete_bubble(uint64_t E_icode, uint64_t e_Cnd, uint64_t E_dstM)
-{
-    return ( E_icode == IJXX && !e_Cnd) || ((E_icode == IMRMOVQ || E_icode == IPOPQ)
-           && (E_dstM == d_srcA || E_dstM == d_srcB) );
+bool DecodeStage::gete_bubble(uint64_t E_icode, uint64_t e_Cnd, uint64_t E_dstM) {
+    return (E_icode == IJXX && !e_Cnd) || ((E_icode == IMRMOVQ || E_icode == IPOPQ)
+                                           && (E_dstM == d_srcA || E_dstM == d_srcB));
 }
 
-void DecodeStage::calculateControlSignals(PipeReg ** regs, Stage ** stages)
-{
-    ExecuteStage * estage = (ExecuteStage *) stages[ESTAGE];
-    E * ereg = (E*) regs[EREG];
+void DecodeStage::calculateControlSignals(PipeReg **regs, Stage **stages) {
+    ExecuteStage *estage = (ExecuteStage *) stages[ESTAGE];
+    E *ereg = (E *) regs[EREG];
     uint64_t E_icode = ereg->geticode()->getOutput();
     uint64_t E_dstM = ereg->getdstM()->getOutput();
     uint64_t e_Cnd = estage->gete_Cnd();
